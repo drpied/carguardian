@@ -212,9 +212,9 @@
                 <div>
                   <div className="label">{T.sortBy}</div>
                   <select className="select" value={sort} onChange={e => setSort(e.target.value)}>
-                    <option value="desc">{lang === 'fr' ? 'Plus récents' : 'Most recent'}</option>
-<option value="asc">{lang === 'fr' ? 'Prix croissant' : 'Price: low to high'}</option>
-<option value="desc_price">{lang === 'fr' ? 'Prix décroissant' : 'Price: high to low'}</option>
+                    <option value="recent">{lang === 'fr' ? 'Plus récents' : 'Most recent'}</option>
+<option value="price_asc">{lang === 'fr' ? 'Prix croissant' : 'Price: low to high'}</option>
+<option value="price_desc">{lang === 'fr' ? 'Prix décroissant' : 'Price: high to low'}</option>
                   </select>
                 </div>
               </div>
