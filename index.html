@@ -148,7 +148,7 @@
         setError("");
         setSearched(true);
         try {
-          let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=20&sort_by=first_seen_at_mc&sort_order=${sort}`;
+          let sortBy = 'first_seen_at_mc'; let sortOrder = 'desc'; if (sort === 'price_asc') { sortBy = 'price'; sortOrder = 'asc'; } if (sort === 'price_desc') { sortBy = 'price'; sortOrder = 'desc'; } let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=20&sort_by=${sortBy}&sort_order=${sortOrder}`;
           if (condition) url += `&condition=${condition}`;
           if (maxPrice < 100000) url += `&price_max=${maxPrice}`;
           const res = await fetch(url);
