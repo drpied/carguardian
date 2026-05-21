@@ -204,16 +204,17 @@
                 <div>
                   <div className="label">{T.condition}</div>
                   <select className="select" value={condition} onChange={e => setCondition(e.target.value)}>
-                    <option value="">{T.all}</option>
-                    <option value="new">{T.new}</option>
-                    <option value="used">{T.used}</option>
+                   <option value="">{lang === 'fr' ? 'Tous' : 'All'}</option>
+<option value="new">{lang === 'fr' ? 'Neuf' : 'New'}</option>
+<option value="used">{lang === 'fr' ? 'Occasion' : 'Pre-owned'}</option>
                   </select>
                 </div>
                 <div>
                   <div className="label">{T.sortBy}</div>
                   <select className="select" value={sort} onChange={e => setSort(e.target.value)}>
-                    <option value="desc">{T.sortNew}</option>
-                    <option value="asc">{T.sortPrice}</option>
+                    <option value="desc">{lang === 'fr' ? 'Plus récents' : 'Most recent'}</option>
+<option value="asc">{lang === 'fr' ? 'Prix croissant' : 'Price: low to high'}</option>
+<option value="desc_price">{lang === 'fr' ? 'Prix décroissant' : 'Price: high to low'}</option>
                   </select>
                 </div>
               </div>
