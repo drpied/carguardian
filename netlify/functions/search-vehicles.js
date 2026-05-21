@@ -17,7 +17,7 @@ exports.handler = async function(event) {
 
   let url = `https://mc-api.marketcheck.com/v2/search/car/active?api_key=${apiKey}&latitude=${latitude}&longitude=${longitude}&radius=${radius}&country=ca&make=${make}&rows=${rows}&start=${start}&sort_by=${sort_by}&sort_order=${sort_order}`;
 
-  if (condition) url += `&inventory_type=${condition}`;
+  if (condition) url += `&car_type=${condition}`;
   if (price_max) url += `&price_max=${price_max}`;
 
   try {
