@@ -310,7 +310,7 @@
     };
 
     const buildMainUrl = (pageNum) => {
-      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=50&start=${pageNum * 50}&${getSortParams()}`;
+      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=250&make=Ford&rows=50&start=${pageNum * 50}&${getSortParams()}`;
       return addFilters(url);
     };
 
