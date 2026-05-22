@@ -7,6 +7,7 @@ exports.handler = async function(event) {
     make = "Ford",
     condition = "",
     price_max = "",
+    query = "",
     rows = "20",
     start = "0",
     sort_by = "first_seen_at_mc",
@@ -20,6 +21,7 @@ exports.handler = async function(event) {
   if (condition) url += `&car_type=${condition}`;
   if (price_max) url += `&price_max=${price_max}`;
   if (sort_by === 'price') url += `&price_min=1`;
+  if (query) url += `&model=${encodeURIComponent(query)}`;
 
   try {
     const response = await fetch(url);
