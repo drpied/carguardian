@@ -12,7 +12,7 @@ exports.handler = async function(event) {
     start = "0",
     sort_by = "first_seen_at_mc",
     sort_order = "desc",
-    source = ""
+    dealer_id = ""
   } = params;
 
   const apiKey = process.env.MARKETCHECK_API_KEY;
@@ -23,7 +23,7 @@ exports.handler = async function(event) {
   if (price_max) url += `&price_max=${price_max}`;
   if (sort_by === 'price') url += `&price_min=1`;
   if (query) url += `&model=${encodeURIComponent(query)}`;
-  if (source) url += `&source=${encodeURIComponent(source)}`;
+  if (dealer_id) url += `&dealer_id=${dealer_id}`;
 
   try {
     const response = await fetch(url);
