@@ -167,7 +167,7 @@
       <img
         src="/forddonnacona-logo-fr.webp"
         alt="Ford Donnacona"
-        style={{width: width || 200, height: 'auto', filter: 'brightness(0) invert(1)'}}
+        style={{width: width || 130, height: 'auto', filter: 'brightness(0) invert(1)'}}
       />
     );
   }
@@ -345,12 +345,8 @@
             <span className="top-bar-text">📍 {T.address} · 418-285-3311</span>
             <button className="lang-btn" onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}>{T.lang}</button>
           </div>
-          <div className="header-main">
-            <div>
-              <div className="dealer-name">Ford Donnacona</div>
-              <div className="tagline">{T.tagline}</div>
-            </div>
-            <FordLogo />
+          <div className="header-main" style={{justifyContent:'center'}}>
+            <FordLogo width={220} />
           </div>
         </header>
 
