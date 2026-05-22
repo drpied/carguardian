@@ -100,6 +100,18 @@
     .footer { background: #0a0e1a; color: rgba(255,255,255,0.35); text-align: center; padding: 28px 20px; font-size: 11px; line-height: 2; }
     .footer-brand { color: rgba(255,255,255,0.7); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
     .footer-powered { color: rgba(255,255,255,0.2); font-size: 10px; margin-top: 8px; letter-spacing: 1px; }
+
+    /* Contact Modal */
+    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:999; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .modal-box { background:#fff; border-radius:16px; padding:28px 24px; max-width:420px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+    .modal-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+    .modal-car { font-size:13px; color:var(--muted); margin-bottom:20px; font-style:italic; }
+    .modal-input { width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid #e0e0e0; font-size:14px; font-family:'Inter',sans-serif; outline:none; margin-bottom:10px; transition:border-color 0.2s; }
+    .modal-input:focus { border-color:var(--navy); }
+    .modal-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    .modal-submit { padding:12px; background:var(--navy); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+    .modal-cancel { padding:12px; background:#fff; color:var(--navy); border:1.5px solid var(--navy); border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+    .modal-success { text-align:center; color:#2e7d32; font-size:15px; font-weight:600; padding:10px 0; }
   </style>
 </head>
 <body>
@@ -172,7 +184,7 @@
     );
   }
 
-  function CarCard({ car, index, T }) {
+  function CarCard({ car, index, T, onContact }) {
     const isDonnacona = car.source === DONNACONA_SOURCE;
     const isToday = car.first_seen_at_mc &&
       new Date(car.first_seen_at_mc * 1000).toDateString() === new Date().toDateString();
@@ -212,8 +224,7 @@
           <div className="source-line">Source: {car.source}</div>
           <div className="card-actions">
             <a href={car.vdp_url} target="_blank" rel="noopener noreferrer" className="btn-primary">{T.viewBtn}</a>
-            <a href={'tel:' + (car.dealer && car.dealer.phone ? car.dealer.phone : '4182853311')}
-               className="btn-secondary">{T.contactBtn}</a>
+            <button className="btn-secondary" onClick={() => onContact && onContact(car)}>{T.contactBtn}</button>
           </div>
         </div>
       </div>
@@ -237,6 +248,45 @@
     const [alertState, setAlertState] = useState("idle"); // idle | saving | success | error
     const [searched, setSearched] = useState(false);
     const [page, setPage] = useState(0);
+    const [contactCar, setContactCar] = useState(null);
+    const [contactName, setContactName] = useState('');
+    const [contactEmail, setContactEmail] = useState('');
+    const [contactPhone, setContactPhone] = useState('');
+    const [contactSent, setContactSent] = useState(false);
+    const [contactSending, setContactSending] = useState(false);
+
+    const isMobile = () => /Mobi|Android/i.test(navigator.userAgent);
+
+    const handleContact = (car) => {
+      if (isMobile()) {
+        window.location.href = 'tel:4182853311';
+      } else {
+        setContactCar(car);
+        setContactName('');
+        setContactEmail('');
+        setContactPhone('');
+        setContactSent(false);
+      }
+    };
+
+    const handleContactSubmit = async () => {
+      if (!contactName || !contactEmail) return;
+      setContactSending(true);
+      const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbxmDy6Cwq_5kpSWrX1cWvWTxVm1cAx3ALFSBUjswGStlUBylJVffsld8MwTJ37nLcHhiw/exec';
+      const params = new URLSearchParams({
+        email: contactEmail,
+        lang,
+        model: contactCar ? contactCar.heading : '',
+        condition: 'contact_form',
+        sort: contactPhone,
+        maxPrice: contactName
+      });
+      try {
+        await fetch(SIGNUP_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+      } catch(e) {}
+      setContactSent(true);
+      setContactSending(false);
+    };
 
     const getSortParams = () => {
       if (sort === 'price_asc') return 'sort_by=price&sort_order=asc';
@@ -404,11 +454,11 @@
                 <div className="results-count"><strong>{total ? total.toLocaleString() : 0}</strong> {T.results}</div>
               </div>
               {totalShown === 0 && <div className="no-results">{T.noResults}</div>}
-              {donnaCards.map((car, i) => <CarCard key={car.id + 'd' + i} car={car} index={i} T={T} />)}
+              {donnaCards.map((car, i) => <CarCard key={car.id + 'd' + i} car={car} index={i} T={T} onContact={handleContact} />)}
               {donnaCards.length > 0 && otherCards.length > 0 && (
                 <div className="region-divider">{T.otherDealers}</div>
               )}
-              {otherCards.map((car, i) => <CarCard key={car.id + 'o' + i} car={car} index={donnaCards.length + i} T={T} />)}
+              {otherCards.map((car, i) => <CarCard key={car.id + 'o' + i} car={car} index={donnaCards.length + i} T={T} onContact={handleContact} />)}
               {totalShown > 0 && otherCards.length > 0 && totalShown < (total || 0) && (
                 <div className="load-more-wrap">
                   <button className="load-more-btn" onClick={handleLoadMore} disabled={loadingMore}>
@@ -419,6 +469,43 @@
             </>
           )}
         </div>
+
+        {/* Contact Modal */}
+        {contactCar && (
+          <div className="modal-overlay" onClick={() => setContactCar(null)}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
+              {!contactSent ? (
+                <>
+                  <div className="modal-title">{lang === 'fr' ? 'Nous contacter' : 'Contact us'}</div>
+                  <div className="modal-car">📋 {contactCar.heading}</div>
+                  <input className="modal-input" placeholder={lang === 'fr' ? 'Votre nom *' : 'Your name *'}
+                    value={contactName} onChange={e => setContactName(e.target.value)} />
+                  <input className="modal-input" placeholder={lang === 'fr' ? 'Votre courriel *' : 'Your email *'}
+                    value={contactEmail} onChange={e => setContactEmail(e.target.value)} />
+                  <input className="modal-input" placeholder={lang === 'fr' ? 'Votre téléphone' : 'Your phone'}
+                    value={contactPhone} onChange={e => setContactPhone(e.target.value)} />
+                  <div style={{fontSize:12, color:'var(--muted)', marginTop:4}}>
+                    {lang === 'fr'
+                      ? 'Un conseiller Ford Donnacona vous contactera sous peu.'
+                      : 'A Ford Donnacona advisor will contact you shortly.'}
+                  </div>
+                  <div className="modal-btns">
+                    <button className="modal-cancel" onClick={() => setContactCar(null)}>
+                      {lang === 'fr' ? 'Annuler' : 'Cancel'}
+                    </button>
+                    <button className="modal-submit" onClick={handleContactSubmit} disabled={contactSending}>
+                      {contactSending ? '...' : (lang === 'fr' ? 'Envoyer' : 'Send')}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="modal-success">
+                  ✅ {lang === 'fr' ? 'Message envoyé! Ford Donnacona vous contactera bientôt.' : 'Message sent! Ford Donnacona will contact you soon.'}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         <section className="alert-section">
           {alertState === 'success' ? (
