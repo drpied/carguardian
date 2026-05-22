@@ -276,12 +276,15 @@
       setContactSending(true);
       const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbxmDy6Cwq_5kpSWrX1cWvWTxVm1cAx3ALFSBUjswGStlUBylJVffsld8MwTJ37nLcHhiw/exec';
       const params = new URLSearchParams({
+        type: 'contact',
+        name: contactName,
         email: contactEmail,
-        lang,
-        model: contactCar ? contactCar.heading : '',
-        condition: 'contact_form',
-        sort: contactPhone,
-        maxPrice: contactName
+        phone: contactPhone || '',
+        vehicle: contactCar ? contactCar.heading : '',
+        price: contactCar && contactCar.price ? contactCar.price.toString() : '',
+        dealer: contactCar && contactCar.dealer ? (contactCar.dealer.name || contactCar.source || '') : '',
+        city: contactCar && contactCar.dealer ? (contactCar.dealer.city || '') : '',
+        lang
       });
       try {
         await fetch(SIGNUP_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
