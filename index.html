@@ -221,9 +221,11 @@
             {car.build && car.build.drivetrain && <span>⚙️ {car.build.drivetrain}</span>}
             {car.dom ? <span>📅 {car.dom}j</span> : null}
           </div>
-          <div className="source-line">Source: {car.source}</div>
-          <div className="card-actions">
-            <a href={car.vdp_url} target="_blank" rel="noopener noreferrer" className="btn-primary">{T.viewBtn}</a>
+          {isDonnacona && <div className="source-line">forddonnacona.com</div>}
+          <div className="card-actions" style={{gridTemplateColumns: isDonnacona ? '1fr 1fr' : '1fr'}}>
+            {isDonnacona && (
+              <a href={car.vdp_url} target="_blank" rel="noopener noreferrer" className="btn-primary">{T.viewBtn}</a>
+            )}
             <button className="btn-secondary" onClick={() => onContact && onContact(car)}>{T.contactBtn}</button>
           </div>
         </div>
