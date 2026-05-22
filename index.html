@@ -24,257 +24,97 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); }
 
-    .header {
-      background: var(--navy);
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
-    }
-    .top-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 28px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      font-size: 11px; letter-spacing: 0.5px;
-    }
+    .header { background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 28px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 11px; }
     .top-bar-text { color: rgba(255,255,255,0.55); }
-    .lang-btn {
-      background: transparent; border: 1px solid rgba(255,255,255,0.3);
-      color: rgba(255,255,255,0.7); border-radius: 20px;
-      padding: 3px 12px; font-size: 11px; font-weight: 600;
-      cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
-    }
+    .lang-btn { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 600; cursor: pointer; letter-spacing: 1px; transition: all 0.2s; }
     .lang-btn:hover { border-color: var(--gold-light); color: var(--gold-light); }
-    .header-main {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 28px;
-    }
-    .dealer-name {
-      font-family: 'Playfair Display', serif;
-      color: var(--white); font-size: 24px; font-weight: 700;
-      letter-spacing: 0.3px; margin-bottom: 3px;
-    }
+    .header-main { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; }
+    .dealer-name { font-family: 'Playfair Display', serif; color: var(--white); font-size: 24px; font-weight: 700; margin-bottom: 3px; }
     .tagline { color: var(--gold-light); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
 
-    .hero {
-      background: linear-gradient(160deg, #001040 0%, #002060 50%, #001a50 100%);
-      padding: 52px 28px 44px;
-      text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(ellipse at 30% 40%, rgba(201,149,42,0.06) 0%, transparent 50%),
-                  radial-gradient(ellipse at 70% 60%, rgba(0,80,255,0.06) 0%, transparent 50%);
-      pointer-events: none;
-    }
-    .morning-badge {
-      display: inline-flex; align-items: center; gap: 7px;
-      background: rgba(201,149,42,0.12); border: 1px solid rgba(201,149,42,0.35);
-      border-radius: 30px; padding: 6px 18px;
-      color: var(--gold-light); font-size: 12px; font-weight: 600;
-      letter-spacing: 0.5px; margin-bottom: 24px;
-    }
-    .hero-title {
-      font-family: 'Playfair Display', serif;
-      color: var(--white); font-size: 36px; font-weight: 900;
-      line-height: 1.15; margin-bottom: 12px;
-      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-    }
-    .hero-sub {
-      color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 300;
-      margin: 0 auto 32px; max-width: 340px; line-height: 1.6;
-    }
+    .hero { background: linear-gradient(160deg, #001040 0%, #002060 50%, #001a50 100%); padding: 52px 28px 44px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at 30% 40%, rgba(201,149,42,0.06) 0%, transparent 50%), radial-gradient(ellipse at 70% 60%, rgba(0,80,255,0.06) 0%, transparent 50%); pointer-events: none; }
+    .morning-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(201,149,42,0.12); border: 1px solid rgba(201,149,42,0.35); border-radius: 30px; padding: 6px 18px; color: var(--gold-light); font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 24px; }
+    .hero-title { font-family: 'Playfair Display', serif; color: var(--white); font-size: 36px; font-weight: 900; line-height: 1.15; margin-bottom: 12px; }
+    .hero-sub { color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 300; margin: 0 auto 32px; max-width: 340px; line-height: 1.6; }
 
-    .search-card {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px; padding: 24px 20px;
-      max-width: 500px; margin: 0 auto;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-    }
-    .search-input {
-      width: 100%; padding: 14px 18px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.08);
-      color: var(--white); font-size: 14px;
-      font-family: 'Inter', sans-serif; outline: none;
-      margin-bottom: 12px; transition: border-color 0.2s;
-    }
+    .search-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px 20px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 40px rgba(0,0,0,0.2); }
+    .search-input { width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); color: var(--white); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
     .search-input:focus { border-color: var(--gold-light); }
     .search-input::placeholder { color: rgba(255,255,255,0.35); }
     .filters-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .filter-label {
-      color: rgba(255,255,255,0.45); font-size: 10px;
-      font-weight: 600; letter-spacing: 1.2px;
-      text-transform: uppercase; margin-bottom: 5px;
-      display: block;
-    }
-    .filter-select {
-      width: 100%; padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: #0a2060; color: var(--white);
-      font-size: 13px; font-family: 'Inter', sans-serif;
-      outline: none; cursor: pointer;
-    }
+    .filter-label { color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 5px; display: block; }
+    .filter-select { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: #0a2060; color: var(--white); font-size: 13px; font-family: 'Inter', sans-serif; outline: none; cursor: pointer; }
     .filter-select option { background: #0a2060; color: var(--white); }
-    .price-label {
-      color: var(--gold-light); font-size: 13px; font-weight: 600;
-      text-align: center; margin-bottom: 8px;
-    }
+    .price-label { color: var(--gold-light); font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 8px; }
     .range-wrap { padding: 0 4px; margin-bottom: 14px; }
     input[type=range] { width: 100%; accent-color: var(--gold-light); cursor: pointer; }
-    .search-btn {
-      width: 100%; padding: 15px;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-      color: var(--navy); font-weight: 700; font-size: 15px;
-      border: none; border-radius: 12px; cursor: pointer;
-      font-family: 'Inter', sans-serif; letter-spacing: 0.5px;
-      transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 4px 16px rgba(201,149,42,0.35);
-    }
-    .search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,149,42,0.45); }
+    .search-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); color: var(--navy); font-weight: 700; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(201,149,42,0.35); }
+    .search-btn:hover { transform: translateY(-1px); }
     .search-btn:disabled { opacity: 0.7; transform: none; cursor: default; }
 
     .results-wrap { max-width: 600px; margin: 0 auto; padding: 28px 20px; }
-    .results-meta {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; padding-bottom: 14px;
-      border-bottom: 1px solid rgba(0,31,91,0.08);
-    }
+    .results-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(0,31,91,0.08); }
     .results-count { font-size: 13px; color: var(--muted); font-style: italic; }
     .results-count strong { color: var(--navy); font-style: normal; font-size: 16px; }
 
-    .donnacona-section { margin-bottom: 8px; }
-    .section-label {
-      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-      text-transform: uppercase; color: var(--navy2);
-      margin-bottom: 12px; padding: 6px 12px;
-      background: rgba(0,31,91,0.06); border-radius: 8px;
-      border-left: 3px solid var(--gold-light);
-      display: inline-block;
-    }
-    .other-section { margin-top: 8px; }
-    .divider {
-      text-align: center; font-size: 11px; color: var(--muted);
-      letter-spacing: 1px; text-transform: uppercase;
-      margin: 20px 0; display: flex; align-items: center; gap: 12px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: rgba(0,31,91,0.1);
-    }
-
-    .car-card {
-      background: var(--white); border-radius: var(--radius);
-      box-shadow: var(--card-shadow); margin-bottom: 20px;
-      overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid rgba(0,31,91,0.06);
-      animation: slideUp 0.4s ease forwards; opacity: 0;
-    }
+    .car-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--card-shadow); margin-bottom: 20px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid rgba(0,31,91,0.06); animation: slideUp 0.4s ease forwards; opacity: 0; }
     .car-card.donnacona-card { border: 2px solid var(--gold-light); }
     .car-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,31,91,0.15); }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
     .card-img-wrap { position: relative; height: 200px; overflow: hidden; background: #eef0f5; }
     .card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
     .car-card:hover .card-img { transform: scale(1.03); }
     .no-photo { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; color: #ccc; }
     .card-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
-    .badge {
-      padding: 4px 10px; border-radius: 20px;
-      font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
-    }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
     .badge-new { background: var(--navy); color: var(--white); }
     .badge-used { background: rgba(255,255,255,0.92); color: var(--navy); border: 1px solid rgba(0,31,91,0.15); }
     .badge-today { background: #d4edda; color: #1a5c2a; }
     .badge-donnacona { background: var(--gold-light); color: var(--navy); }
+
     .card-body { padding: 18px 20px; }
-    .card-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: 17px; font-weight: 700; color: var(--navy);
-      margin-bottom: 8px; line-height: 1.3;
-    }
+    .card-heading { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.3; }
     .card-price { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
     .card-price span { font-size: 14px; font-weight: 400; color: var(--muted); }
-    .card-details {
-      display: flex; gap: 14px; flex-wrap: wrap;
-      font-size: 12px; color: var(--muted); margin-bottom: 10px;
-    }
-    .source-line { font-size: 10px; color: #bbb; margin-bottom: 14px; letter-spacing: 0.3px; }
+    .card-details { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .source-line { font-size: 10px; color: #bbb; margin-bottom: 14px; }
     .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .btn-primary {
-      padding: 11px; background: var(--navy); color: var(--white);
-      border: none; border-radius: 10px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-      text-align: center; text-decoration: none; display: block; transition: background 0.2s;
-    }
+    .btn-primary { padding: 11px; background: var(--navy); color: var(--white); border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; text-decoration: none; display: block; transition: background 0.2s; }
     .btn-primary:hover { background: var(--navy2); }
-    .btn-secondary {
-      padding: 11px; background: var(--white); color: var(--navy);
-      border: 1.5px solid var(--navy); border-radius: 10px;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      font-family: 'Inter', sans-serif; text-align: center;
-      text-decoration: none; display: block; transition: background 0.2s;
-    }
+    .btn-secondary { padding: 11px; background: var(--white); color: var(--navy); border: 1.5px solid var(--navy); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; text-decoration: none; display: block; transition: background 0.2s; }
     .btn-secondary:hover { background: var(--cream); }
 
+    .donnacona-divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 20px; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+    .donnacona-divider::before, .donnacona-divider::after { content: ''; flex: 1; height: 1px; background: rgba(0,31,91,0.1); }
+
     .load-more-wrap { text-align: center; margin: 8px 0 24px; }
-    .load-more-btn {
-      padding: 14px 36px; background: var(--white); color: var(--navy);
-      border: 2px solid var(--navy); border-radius: 12px;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      font-family: 'Inter', sans-serif; transition: all 0.2s;
-    }
+    .load-more-btn { padding: 14px 36px; background: var(--white); color: var(--navy); border: 2px solid var(--navy); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
     .load-more-btn:hover { background: var(--navy); color: var(--white); }
     .load-more-btn:disabled { opacity: 0.5; cursor: default; }
 
     .loader { text-align: center; padding: 48px 0; }
     .loader-text { font-size: 14px; color: #666; margin-bottom: 12px; }
     .loader-dots { display: flex; justify-content: center; gap: 6px; }
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%; background: var(--navy2);
-      animation: pulse 1s ease-in-out infinite alternate;
-    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--navy2); animation: pulse 1s ease-in-out infinite alternate; }
     .dot:nth-child(2) { animation-delay: 0.2s; }
     .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes pulse { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1.1); } }
     .no-results { text-align: center; padding: 40px 20px; color: var(--muted); font-style: italic; }
     .error-msg { text-align: center; padding: 20px; color: #c00; font-style: italic; }
 
-    .alert-section {
-      background: linear-gradient(135deg, var(--navy) 0%, #001040 100%);
-      padding: 48px 28px; text-align: center;
-      border-top: 3px solid var(--gold);
-    }
-    .alert-title {
-      font-family: 'Playfair Display', serif;
-      color: var(--gold-light); font-size: 26px; font-weight: 700; margin-bottom: 10px;
-    }
+    .alert-section { background: linear-gradient(135deg, var(--navy) 0%, #001040 100%); padding: 48px 28px; text-align: center; border-top: 3px solid var(--gold); }
+    .alert-title { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 26px; font-weight: 700; margin-bottom: 10px; }
     .alert-sub { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
     .alert-form { display: flex; gap: 10px; max-width: 380px; margin: 0 auto; flex-wrap: wrap; }
-    .alert-input {
-      flex: 1; min-width: 200px; padding: 13px 18px;
-      border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.08); color: var(--white);
-      font-size: 14px; font-family: 'Inter', sans-serif; outline: none;
-    }
+    .alert-input { flex: 1; min-width: 200px; padding: 13px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: var(--white); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
     .alert-input::placeholder { color: rgba(255,255,255,0.35); }
-    .alert-btn {
-      padding: 13px 22px; background: var(--gold-light); color: var(--navy);
-      font-weight: 700; font-size: 14px; border: none; border-radius: 10px;
-      cursor: pointer; font-family: 'Inter', sans-serif;
-    }
+    .alert-btn { padding: 13px 22px; background: var(--gold-light); color: var(--navy); font-weight: 700; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; font-family: 'Inter', sans-serif; }
     .alert-success { color: var(--gold-light); font-size: 16px; font-weight: 600; }
 
-    .footer {
-      background: #0a0e1a; color: rgba(255,255,255,0.35);
-      text-align: center; padding: 28px 20px; font-size: 11px; line-height: 2;
-    }
+    .footer { background: #0a0e1a; color: rgba(255,255,255,0.35); text-align: center; padding: 28px 20px; font-size: 11px; line-height: 2; }
     .footer-brand { color: rgba(255,255,255,0.7); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
     .footer-powered { color: rgba(255,255,255,0.2); font-size: 10px; margin-top: 8px; letter-spacing: 1px; }
   </style>
@@ -283,6 +123,8 @@
 <div id="root"></div>
 <script type="text/babel">
   const { useState } = React;
+
+  const DONNACONA_DEALER_ID = '1122841';
 
   const copy = {
     fr: {
@@ -302,8 +144,7 @@
       noResults: "Aucun résultat. Essayez d'élargir vos critères.",
       loading: "Recherche en cours...",
       loadMore: "Charger plus de résultats",
-      donnaconaLabel: "⭐ Disponible chez Ford Donnacona",
-      otherLabel: "Autres concessionnaires de la région",
+      otherDealers: "Autres véhicules dans la région",
       alertTitle: "Alertes quotidiennes",
       alertSub: "Recevez chaque matin les nouveaux véhicules correspondant à vos critères.",
       alertPlaceholder: "Votre adresse courriel",
@@ -329,8 +170,7 @@
       noResults: "No results. Try expanding your search criteria.",
       loading: "Searching...",
       loadMore: "Load more results",
-      donnaconaLabel: "⭐ Available at Ford Donnacona",
-      otherLabel: "Other dealers in the region",
+      otherDealers: "Other vehicles in the region",
       alertTitle: "Daily alerts",
       alertSub: "Receive new matching vehicles every morning directly in your inbox.",
       alertPlaceholder: "Your email address",
@@ -359,14 +199,13 @@
       ? p.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 })
       : T.prixSurDemande;
     const fmtKm = (m) => m ? m.toLocaleString() + ' ' + T.km : '';
-
     return (
       <div className={'car-card' + (isDonnacona ? ' donnacona-card' : '')}
            style={{animationDelay: Math.min(index, 10) * 0.06 + 's'}}>
         <div className="card-img-wrap">
           {car.media && car.media.photo_links && car.media.photo_links[0]
             ? <img className="card-img" src={car.media.photo_links[0]} alt={car.heading}
-                   onError={e => e.target.style.display='none'} />
+                   onError={e => e.target.style.display = 'none'} />
             : <div className="no-photo">🚗</div>
           }
           <div className="card-badges">
@@ -407,8 +246,7 @@
     const [maxPrice, setMaxPrice] = useState(150000);
     const [condition, setCondition] = useState("");
     const [sort, setSort] = useState("recent");
-    const [donnaconaListings, setDonnaconaListings] = useState([]);
-    const [otherListings, setOtherListings] = useState([]);
+    const [allListings, setAllListings] = useState([]);
     const [total, setTotal] = useState(null);
     const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -417,17 +255,28 @@
     const [alertSet, setAlertSet] = useState(false);
     const [searched, setSearched] = useState(false);
     const [page, setPage] = useState(0);
+    const [hasDonnacona, setHasDonnacona] = useState(false);
 
-    const buildUrl = (pageNum, sourceFilter) => {
-      let sortBy = 'first_seen_at_mc', sortOrder = 'desc';
-      if (sort === 'price_asc') { sortBy = 'price'; sortOrder = 'asc'; }
-      if (sort === 'price_desc') { sortBy = 'price'; sortOrder = 'desc'; }
-      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=20&start=${pageNum * 20}&sort_by=${sortBy}&sort_order=${sortOrder}`;
+    const getSortParams = () => {
+      if (sort === 'price_asc') return { sort_by: 'price', sort_order: 'asc' };
+      if (sort === 'price_desc') return { sort_by: 'price', sort_order: 'desc' };
+      return { sort_by: 'first_seen_at_mc', sort_order: 'desc' };
+    };
+
+    const buildUrl = (pageNum, dealerId) => {
+      const { sort_by, sort_order } = getSortParams();
+      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=20&start=${pageNum * 20}&sort_by=${sort_by}&sort_order=${sort_order}`;
       if (condition) url += `&condition=${condition}`;
       if (maxPrice < 150000) url += `&price_max=${maxPrice}`;
       if (model.trim()) url += `&query=${encodeURIComponent(model.trim())}`;
-      if (sourceFilter) url += `&source=${encodeURIComponent(sourceFilter)}`;
+      if (dealerId) url += `&dealer_id=${dealerId}`;
       return url;
+    };
+
+    const mergeListings = (donnaListings, mainListings) => {
+      const donnaIds = new Set(donnaListings.map(l => l.id));
+      const others = mainListings.filter(l => !donnaIds.has(l.id));
+      return [...donnaListings, ...others];
     };
 
     const handleSearch = async () => {
@@ -435,17 +284,14 @@
       try {
         const [mainRes, donnaRes] = await Promise.all([
           fetch(buildUrl(0, '')),
-          fetch(buildUrl(0, 'forddonnacona.com'))
+          fetch(buildUrl(0, DONNACONA_DEALER_ID))
         ]);
         const mainData = await mainRes.json();
         const donnaData = await donnaRes.json();
-
         const donnaListings = donnaData.listings || [];
-        const donnaIds = new Set(donnaListings.map(l => l.id));
-        const others = (mainData.listings || []).filter(l => !donnaIds.has(l.id));
-
-        setDonnaconaListings(donnaListings);
-        setOtherListings(others);
+        const mainListings = mainData.listings || [];
+        setHasDonnacona(donnaListings.length > 0);
+        setAllListings(mergeListings(donnaListings, mainListings));
         setTotal(mainData.num_found || 0);
       } catch(e) { setError("Erreur de connexion. Veuillez réessayer."); }
       setLoading(false);
@@ -457,15 +303,16 @@
       try {
         const res = await fetch(buildUrl(nextPage, ''));
         const data = await res.json();
-        const donnaIds = new Set(donnaconaListings.map(l => l.id));
+        const donnaIds = new Set(allListings.filter(l => l.dealer && l.dealer.website === 'forddonnacona.com').map(l => l.id));
         const newOthers = (data.listings || []).filter(l => !donnaIds.has(l.id));
-        setOtherListings(prev => [...prev, ...newOthers]);
+        setAllListings(prev => [...prev, ...newOthers]);
         setPage(nextPage);
       } catch(e) {}
       setLoadingMore(false);
     };
 
-    const totalShown = donnaconaListings.length + otherListings.length;
+    const donnaconaCards = allListings.filter(l => l.dealer && l.dealer.website === 'forddonnacona.com');
+    const otherCards = allListings.filter(l => !l.dealer || l.dealer.website !== 'forddonnacona.com');
 
     return (
       <div>
@@ -488,13 +335,9 @@
           <h1 className="hero-title">{T.heroTitle}</h1>
           <p className="hero-sub">{T.heroSub}</p>
           <div className="search-card">
-            <input
-              className="search-input"
-              placeholder={T.placeholder}
-              value={model}
+            <input className="search-input" placeholder={T.placeholder} value={model}
               onChange={e => setModel(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            />
+              onKeyDown={e => e.key === 'Enter' && handleSearch()} />
             <div className="filters-row">
               <div>
                 <label className="filter-label">{T.condLabel}</label>
@@ -519,7 +362,7 @@
             </div>
             <div className="range-wrap">
               <input type="range" min={10000} max={150000} step={1000}
-                     value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
+                value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
             </div>
             <button className="search-btn" onClick={handleSearch} disabled={loading}>
               {loading ? '...' : '🔍 ' + T.searchBtn}
@@ -545,31 +388,21 @@
                 </div>
               </div>
 
-              {totalShown === 0 && <div className="no-results">{T.noResults}</div>}
+              {allListings.length === 0 && <div className="no-results">{T.noResults}</div>}
 
-              {donnaconaListings.length > 0 && (
-                <div className="donnacona-section">
-                  <div className="section-label">{T.donnaconaLabel}</div>
-                  {donnaconaListings.map((car, i) => (
-                    <CarCard key={car.id + '-d-' + i} car={car} index={i} T={T} />
-                  ))}
-                </div>
+              {donnaconaCards.map((car, i) => (
+                <CarCard key={car.id + '-d-' + i} car={car} index={i} T={T} />
+              ))}
+
+              {donnaconaCards.length > 0 && otherCards.length > 0 && (
+                <div className="donnacona-divider">{T.otherDealers}</div>
               )}
 
-              {donnaconaListings.length > 0 && otherListings.length > 0 && (
-                <div className="divider">{T.otherLabel}</div>
-              )}
+              {otherCards.map((car, i) => (
+                <CarCard key={car.id + '-o-' + i} car={car} index={donnaconaCards.length + i} T={T} />
+              ))}
 
-              {otherListings.length > 0 && (
-                <div className="other-section">
-                  {donnaconaListings.length === 0 && <div className="section-label">{T.otherLabel}</div>}
-                  {otherListings.map((car, i) => (
-                    <CarCard key={car.id + '-o-' + i} car={car} index={donnaconaListings.length + i} T={T} />
-                  ))}
-                </div>
-              )}
-
-              {totalShown > 0 && totalShown < (total || 0) && (
+              {allListings.length > 0 && allListings.length < (total || 0) && (
                 <div className="load-more-wrap">
                   <button className="load-more-btn" onClick={handleLoadMore} disabled={loadingMore}>
                     {loadingMore ? '...' : '⬇️ ' + T.loadMore}
@@ -587,7 +420,7 @@
               <div className="alert-sub">{T.alertSub}</div>
               <div className="alert-form">
                 <input className="alert-input" placeholder={T.alertPlaceholder}
-                       value={email} onChange={e => setEmail(e.target.value)} />
+                  value={email} onChange={e => setEmail(e.target.value)} />
                 <button className="alert-btn" onClick={() => email && setAlertSet(true)}>{T.alertBtn}</button>
               </div>
             </>
