@@ -148,6 +148,25 @@
     .results-count { font-size: 13px; color: var(--muted); font-style: italic; }
     .results-count strong { color: var(--navy); font-style: normal; font-size: 16px; }
 
+    .donnacona-section { margin-bottom: 8px; }
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--navy2);
+      margin-bottom: 12px; padding: 6px 12px;
+      background: rgba(0,31,91,0.06); border-radius: 8px;
+      border-left: 3px solid var(--gold-light);
+      display: inline-block;
+    }
+    .other-section { margin-top: 8px; }
+    .divider {
+      text-align: center; font-size: 11px; color: var(--muted);
+      letter-spacing: 1px; text-transform: uppercase;
+      margin: 20px 0; display: flex; align-items: center; gap: 12px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(0,31,91,0.1);
+    }
+
     .car-card {
       background: var(--white); border-radius: var(--radius);
       box-shadow: var(--card-shadow); margin-bottom: 20px;
@@ -155,6 +174,7 @@
       border: 1px solid rgba(0,31,91,0.06);
       animation: slideUp 0.4s ease forwards; opacity: 0;
     }
+    .car-card.donnacona-card { border: 2px solid var(--gold-light); }
     .car-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,31,91,0.15); }
     @keyframes slideUp {
       from { opacity: 0; transform: translateY(16px); }
@@ -191,8 +211,7 @@
       padding: 11px; background: var(--navy); color: var(--white);
       border: none; border-radius: 10px; font-size: 13px; font-weight: 600;
       cursor: pointer; font-family: 'Inter', sans-serif;
-      text-align: center; text-decoration: none; display: block;
-      transition: background 0.2s;
+      text-align: center; text-decoration: none; display: block; transition: background 0.2s;
     }
     .btn-primary:hover { background: var(--navy2); }
     .btn-secondary {
@@ -283,6 +302,8 @@
       noResults: "Aucun résultat. Essayez d'élargir vos critères.",
       loading: "Recherche en cours...",
       loadMore: "Charger plus de résultats",
+      donnaconaLabel: "⭐ Disponible chez Ford Donnacona",
+      otherLabel: "Autres concessionnaires de la région",
       alertTitle: "Alertes quotidiennes",
       alertSub: "Recevez chaque matin les nouveaux véhicules correspondant à vos critères.",
       alertPlaceholder: "Votre adresse courriel",
@@ -308,6 +329,8 @@
       noResults: "No results. Try expanding your search criteria.",
       loading: "Searching...",
       loadMore: "Load more results",
+      donnaconaLabel: "⭐ Available at Ford Donnacona",
+      otherLabel: "Other dealers in the region",
       alertTitle: "Daily alerts",
       alertSub: "Receive new matching vehicles every morning directly in your inbox.",
       alertPlaceholder: "Your email address",
@@ -328,6 +351,55 @@
     );
   }
 
+  function CarCard({ car, index, T }) {
+    const isDonnacona = car.dealer && car.dealer.website === 'forddonnacona.com';
+    const isToday = car.first_seen_at_mc &&
+      new Date(car.first_seen_at_mc * 1000).toDateString() === new Date().toDateString();
+    const fmtPrice = (p) => p
+      ? p.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 })
+      : T.prixSurDemande;
+    const fmtKm = (m) => m ? m.toLocaleString() + ' ' + T.km : '';
+
+    return (
+      <div className={'car-card' + (isDonnacona ? ' donnacona-card' : '')}
+           style={{animationDelay: Math.min(index, 10) * 0.06 + 's'}}>
+        <div className="card-img-wrap">
+          {car.media && car.media.photo_links && car.media.photo_links[0]
+            ? <img className="card-img" src={car.media.photo_links[0]} alt={car.heading}
+                   onError={e => e.target.style.display='none'} />
+            : <div className="no-photo">🚗</div>
+          }
+          <div className="card-badges">
+            <span className={car.inventory_type === 'new' ? 'badge badge-new' : 'badge badge-used'}>
+              {car.inventory_type === 'new' ? T.condNew : T.condUsed}
+            </span>
+            {isDonnacona && <span className="badge badge-donnacona">⭐ {T.donnacona}</span>}
+            {isToday && <span className="badge badge-today">🆕 {T.today}</span>}
+          </div>
+        </div>
+        <div className="card-body">
+          <div className="card-heading">{car.heading}</div>
+          <div className="card-price">
+            {fmtPrice(car.price)}
+            {car.miles ? <span> · {fmtKm(car.miles)}</span> : null}
+          </div>
+          <div className="card-details">
+            {car.dealer && car.dealer.city && <span>📍 {car.dealer.city}, {car.dealer.state}</span>}
+            {car.build && car.build.fuel_type && <span>⛽ {car.build.fuel_type}</span>}
+            {car.build && car.build.drivetrain && <span>⚙️ {car.build.drivetrain}</span>}
+            {car.dom ? <span>📅 {car.dom}j</span> : null}
+          </div>
+          <div className="source-line">Source: {car.source}</div>
+          <div className="card-actions">
+            <a href={car.vdp_url} target="_blank" rel="noopener noreferrer" className="btn-primary">{T.viewBtn}</a>
+            <a href={'tel:' + (car.dealer && car.dealer.phone ? car.dealer.phone : '4182853311')}
+               className="btn-secondary">{T.contactBtn}</a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   function App() {
     const [lang, setLang] = useState("fr");
     const T = copy[lang];
@@ -335,7 +407,8 @@
     const [maxPrice, setMaxPrice] = useState(150000);
     const [condition, setCondition] = useState("");
     const [sort, setSort] = useState("recent");
-    const [listings, setListings] = useState([]);
+    const [donnaconaListings, setDonnaconaListings] = useState([]);
+    const [otherListings, setOtherListings] = useState([]);
     const [total, setTotal] = useState(null);
     const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -345,13 +418,7 @@
     const [searched, setSearched] = useState(false);
     const [page, setPage] = useState(0);
 
-    const fmtPrice = (p) => p
-      ? p.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 })
-      : T.prixSurDemande;
-
-    const fmtKm = (m) => m ? `${m.toLocaleString()} ${T.km}` : "";
-
-    const buildUrl = (pageNum) => {
+    const buildUrl = (pageNum, sourceFilter) => {
       let sortBy = 'first_seen_at_mc', sortOrder = 'desc';
       if (sort === 'price_asc') { sortBy = 'price'; sortOrder = 'asc'; }
       if (sort === 'price_desc') { sortBy = 'price'; sortOrder = 'desc'; }
@@ -359,21 +426,27 @@
       if (condition) url += `&condition=${condition}`;
       if (maxPrice < 150000) url += `&price_max=${maxPrice}`;
       if (model.trim()) url += `&query=${encodeURIComponent(model.trim())}`;
+      if (sourceFilter) url += `&source=${encodeURIComponent(sourceFilter)}`;
       return url;
     };
-
-    const prioritize = (results) => [
-      ...results.filter(r => r.dealer && r.dealer.website === 'forddonnacona.com'),
-      ...results.filter(r => !r.dealer || r.dealer.website !== 'forddonnacona.com')
-    ];
 
     const handleSearch = async () => {
       setLoading(true); setError(""); setSearched(true); setPage(0);
       try {
-        const res = await fetch(buildUrl(0));
-        const data = await res.json();
-        setListings(prioritize(data.listings || []));
-        setTotal(data.num_found || 0);
+        const [mainRes, donnaRes] = await Promise.all([
+          fetch(buildUrl(0, '')),
+          fetch(buildUrl(0, 'forddonnacona.com'))
+        ]);
+        const mainData = await mainRes.json();
+        const donnaData = await donnaRes.json();
+
+        const donnaListings = donnaData.listings || [];
+        const donnaIds = new Set(donnaListings.map(l => l.id));
+        const others = (mainData.listings || []).filter(l => !donnaIds.has(l.id));
+
+        setDonnaconaListings(donnaListings);
+        setOtherListings(others);
+        setTotal(mainData.num_found || 0);
       } catch(e) { setError("Erreur de connexion. Veuillez réessayer."); }
       setLoading(false);
     };
@@ -382,20 +455,17 @@
       setLoadingMore(true);
       const nextPage = page + 1;
       try {
-        const res = await fetch(buildUrl(nextPage));
+        const res = await fetch(buildUrl(nextPage, ''));
         const data = await res.json();
-        setListings(prev => [...prev, ...prioritize(data.listings || [])]);
+        const donnaIds = new Set(donnaconaListings.map(l => l.id));
+        const newOthers = (data.listings || []).filter(l => !donnaIds.has(l.id));
+        setOtherListings(prev => [...prev, ...newOthers]);
         setPage(nextPage);
       } catch(e) {}
       setLoadingMore(false);
     };
 
-    const isToday = (l) => {
-      if (!l.first_seen_at_mc) return false;
-      return new Date(l.first_seen_at_mc * 1000).toDateString() === new Date().toDateString();
-    };
-
-    const isDonnacona = (l) => l.dealer && l.dealer.website === 'forddonnacona.com';
+    const totalShown = donnaconaListings.length + otherListings.length;
 
     return (
       <div>
@@ -444,10 +514,12 @@
               </div>
             </div>
             <div className="price-label">
-              {T.maxPrice}: {maxPrice >= 150000 ? T.noLimit : maxPrice.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 })}
+              {T.maxPrice}: {maxPrice >= 150000 ? T.noLimit
+                : maxPrice.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 })}
             </div>
             <div className="range-wrap">
-              <input type="range" min={10000} max={150000} step={1000} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
+              <input type="range" min={10000} max={150000} step={1000}
+                     value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
             </div>
             <button className="search-btn" onClick={handleSearch} disabled={loading}>
               {loading ? '...' : '🔍 ' + T.searchBtn}
@@ -468,45 +540,36 @@
           {!loading && searched && !error && (
             <>
               <div className="results-meta">
-                <div className="results-count"><strong>{total ? total.toLocaleString() : 0}</strong> {T.results}</div>
-              </div>
-              {listings.length === 0 && <div className="no-results">{T.noResults}</div>}
-              {listings.map((car, i) => (
-                <div key={car.id + '-' + i} className="car-card" style={{animationDelay: `${Math.min(i,10)*0.06}s`}}>
-                  <div className="card-img-wrap">
-                    {car.media && car.media.photo_links && car.media.photo_links[0]
-                      ? <img className="card-img" src={car.media.photo_links[0]} alt={car.heading} onError={e => e.target.style.display='none'} />
-                      : <div className="no-photo">🚗</div>
-                    }
-                    <div className="card-badges">
-                      <span className={car.inventory_type === 'new' ? 'badge badge-new' : 'badge badge-used'}>
-                        {car.inventory_type === 'new' ? T.condNew : T.condUsed}
-                      </span>
-                      {isDonnacona(car) && <span className="badge badge-donnacona">⭐ {T.donnacona}</span>}
-                      {isToday(car) && <span className="badge badge-today">🆕 {T.today}</span>}
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <div className="card-heading">{car.heading}</div>
-                    <div className="card-price">
-                      {fmtPrice(car.price)}
-                      {car.miles ? <span> · {fmtKm(car.miles)}</span> : null}
-                    </div>
-                    <div className="card-details">
-                      {car.dealer && car.dealer.city && <span>📍 {car.dealer.city}, {car.dealer.state}</span>}
-                      {car.build && car.build.fuel_type && <span>⛽ {car.build.fuel_type}</span>}
-                      {car.build && car.build.drivetrain && <span>⚙️ {car.build.drivetrain}</span>}
-                      {car.dom ? <span>📅 {car.dom}j</span> : null}
-                    </div>
-                    <div className="source-line">Source: {car.source}</div>
-                    <div className="card-actions">
-                      <a href={car.vdp_url} target="_blank" rel="noopener noreferrer" className="btn-primary">{T.viewBtn}</a>
-                      <a href={'tel:' + (car.dealer && car.dealer.phone ? car.dealer.phone : '4182853311')} className="btn-secondary">{T.contactBtn}</a>
-                    </div>
-                  </div>
+                <div className="results-count">
+                  <strong>{total ? total.toLocaleString() : 0}</strong> {T.results}
                 </div>
-              ))}
-              {listings.length > 0 && listings.length < (total || 0) && (
+              </div>
+
+              {totalShown === 0 && <div className="no-results">{T.noResults}</div>}
+
+              {donnaconaListings.length > 0 && (
+                <div className="donnacona-section">
+                  <div className="section-label">{T.donnaconaLabel}</div>
+                  {donnaconaListings.map((car, i) => (
+                    <CarCard key={car.id + '-d-' + i} car={car} index={i} T={T} />
+                  ))}
+                </div>
+              )}
+
+              {donnaconaListings.length > 0 && otherListings.length > 0 && (
+                <div className="divider">{T.otherLabel}</div>
+              )}
+
+              {otherListings.length > 0 && (
+                <div className="other-section">
+                  {donnaconaListings.length === 0 && <div className="section-label">{T.otherLabel}</div>}
+                  {otherListings.map((car, i) => (
+                    <CarCard key={car.id + '-o-' + i} car={car} index={donnaconaListings.length + i} T={T} />
+                  ))}
+                </div>
+              )}
+
+              {totalShown > 0 && totalShown < (total || 0) && (
                 <div className="load-more-wrap">
                   <button className="load-more-btn" onClick={handleLoadMore} disabled={loadingMore}>
                     {loadingMore ? '...' : '⬇️ ' + T.loadMore}
@@ -523,7 +586,8 @@
               <div className="alert-title">☀️ {T.alertTitle}</div>
               <div className="alert-sub">{T.alertSub}</div>
               <div className="alert-form">
-                <input className="alert-input" placeholder={T.alertPlaceholder} value={email} onChange={e => setEmail(e.target.value)} />
+                <input className="alert-input" placeholder={T.alertPlaceholder}
+                       value={email} onChange={e => setEmail(e.target.value)} />
                 <button className="alert-btn" onClick={() => email && setAlertSet(true)}>{T.alertBtn}</button>
               </div>
             </>
