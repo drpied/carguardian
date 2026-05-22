@@ -93,8 +93,10 @@
     .alert-form { display: flex; gap: 10px; max-width: 380px; margin: 0 auto; flex-wrap: wrap; }
     .alert-input { flex: 1; min-width: 200px; padding: 13px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: var(--white); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
     .alert-input::placeholder { color: rgba(255,255,255,0.35); }
-    .alert-btn { padding: 13px 22px; background: var(--gold-light); color: var(--navy); font-weight: 700; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .alert-btn { padding: 13px 22px; background: var(--gold-light); color: var(--navy); font-weight: 700; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s; }
+    .alert-btn:disabled { opacity: 0.6; cursor: default; }
     .alert-success { color: var(--gold-light); font-size: 16px; font-weight: 600; }
+    .alert-error { color: #ff9999; font-size: 14px; margin-top: 10px; }
     .footer { background: #0a0e1a; color: rgba(255,255,255,0.35); text-align: center; padding: 28px 20px; font-size: 11px; line-height: 2; }
     .footer-brand { color: rgba(255,255,255,0.7); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
     .footer-powered { color: rgba(255,255,255,0.2); font-size: 10px; margin-top: 8px; letter-spacing: 1px; }
@@ -106,10 +108,10 @@
   const { useState } = React;
 
   const DONNACONA_SOURCE = 'forddonnacona.com';
-  // Exact dealership coordinates for tight-radius guaranteed fetch
   const DONNA_LAT = '46.683713';
   const DONNA_LNG = '-71.734071';
-  const DONNA_RADIUS = '8'; // ~5 miles, tight enough to only capture Donnacona area
+  const DONNA_RADIUS = '8';
+  const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbw43zaaffGR4Lrg9dfEP4-H0ySOHP-O6UtGhW97Ij9XKOcfzLizEYWWUJTEz1MEqPpYtQ/exec';
 
   const copy = {
     fr: {
@@ -128,9 +130,11 @@
       loading: "Recherche en cours...", loadMore: "Charger plus de résultats",
       otherDealers: "Autres véhicules dans la région",
       alertTitle: "Alertes quotidiennes",
-      alertSub: "Recevez chaque matin les nouveaux véhicules correspondant à vos critères.",
-      alertPlaceholder: "Votre adresse courriel", alertBtn: "Activer",
-      alertSuccess: "✅ Alerte activée — vous recevrez les nouveaux véhicules chaque matin!",
+      alertSub: "Recevez chaque matin les nouveaux véhicules correspondant à vos critères — directement dans votre boîte courriel.",
+      alertPlaceholder: "Votre adresse courriel",
+      alertBtn: "Activer", alertSaving: "Activation...",
+      alertSuccess: "✅ Alerte activée! Vous recevrez les nouveaux véhicules chaque matin.",
+      alertError: "Une erreur s'est produite. Veuillez réessayer.",
       address: "128 Boul. Les Écureuils, Donnacona QC", lang: "EN", km: "km"
     },
     en: {
@@ -150,8 +154,10 @@
       otherDealers: "Other vehicles in the region",
       alertTitle: "Daily alerts",
       alertSub: "Receive new matching vehicles every morning directly in your inbox.",
-      alertPlaceholder: "Your email address", alertBtn: "Activate",
-      alertSuccess: "✅ Alert activated — you'll receive new vehicles every morning!",
+      alertPlaceholder: "Your email address",
+      alertBtn: "Activate", alertSaving: "Saving...",
+      alertSuccess: "✅ Alert activated! You'll receive new vehicles every morning.",
+      alertError: "Something went wrong. Please try again.",
       address: "128 Boul. Les Écureuils, Donnacona QC", lang: "FR", km: "km"
     }
   };
@@ -228,7 +234,7 @@
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState("");
     const [email, setEmail] = useState("");
-    const [alertSet, setAlertSet] = useState(false);
+    const [alertState, setAlertState] = useState("idle"); // idle | saving | success | error
     const [searched, setSearched] = useState(false);
     const [page, setPage] = useState(0);
 
@@ -245,20 +251,16 @@
       return url;
     };
 
-    // Main regional search — broad radius
     const buildMainUrl = (pageNum) => {
       let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=50&start=${pageNum * 50}&${getSortParams()}`;
       return addFilters(url);
     };
 
-    // Donnacona-specific — tight radius around exact dealership coordinates
-    // This guarantees we always get their inventory regardless of regional sort order
     const buildDonnaconaUrl = () => {
       let url = `/api/search-vehicles?latitude=${DONNA_LAT}&longitude=${DONNA_LNG}&radius=${DONNA_RADIUS}&make=Ford&rows=50&start=0&${getSortParams()}`;
       return addFilters(url);
     };
 
-    // Sort a list client-side, pushing no-price listings to end
     const clientSort = (listings) => {
       if (sort === 'price_asc') {
         return [...listings].sort((a, b) => {
@@ -276,27 +278,21 @@
           return b.price - a.price;
         });
       }
-      return listings; // recent: already API-sorted
+      return listings;
     };
 
     const handleSearch = async () => {
       setLoading(true); setError(""); setSearched(true); setPage(0);
       try {
-        // Two parallel calls: tight Donnacona + broad regional
         const [mainRes, donnaRes] = await Promise.all([
           fetch(buildMainUrl(0)),
           fetch(buildDonnaconaUrl())
         ]);
         const mainData = await mainRes.json();
         const donnaData = await donnaRes.json();
-
-        // Extract Donnacona cars from tight-radius call
         const rawDonna = (donnaData.listings || []).filter(l => l.source === DONNACONA_SOURCE);
-
-        // Remove Donnacona cars from regional results to avoid duplicates
         const donnaIds = new Set(rawDonna.map(l => l.id));
         const rawOthers = (mainData.listings || []).filter(l => !donnaIds.has(l.id) && l.source !== DONNACONA_SOURCE);
-
         setDonnaCards(clientSort(rawDonna));
         setOtherCards(clientSort(rawOthers));
         setTotal(mainData.num_found || 0);
@@ -316,6 +312,30 @@
         setPage(nextPage);
       } catch(e) {}
       setLoadingMore(false);
+    };
+
+    const handleSignup = async () => {
+      if (!email || !email.includes('@')) return;
+      setAlertState("saving");
+      try {
+        await fetch(SIGNUP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            lang,
+            model: model || '',
+            condition: condition || '',
+            sort: sort || 'recent',
+            maxPrice
+          })
+        });
+        // no-cors means we can't read response — assume success
+        setAlertState("success");
+      } catch(e) {
+        setAlertState("error");
+      }
     };
 
     const totalShown = donnaCards.length + otherCards.length;
@@ -389,17 +409,12 @@
               <div className="results-meta">
                 <div className="results-count"><strong>{total ? total.toLocaleString() : 0}</strong> {T.results}</div>
               </div>
-
               {totalShown === 0 && <div className="no-results">{T.noResults}</div>}
-
               {donnaCards.map((car, i) => <CarCard key={car.id + 'd' + i} car={car} index={i} T={T} />)}
-
               {donnaCards.length > 0 && otherCards.length > 0 && (
                 <div className="region-divider">{T.otherDealers}</div>
               )}
-
               {otherCards.map((car, i) => <CarCard key={car.id + 'o' + i} car={car} index={donnaCards.length + i} T={T} />)}
-
               {totalShown > 0 && otherCards.length > 0 && totalShown < (total || 0) && (
                 <div className="load-more-wrap">
                   <button className="load-more-btn" onClick={handleLoadMore} disabled={loadingMore}>
@@ -412,18 +427,31 @@
         </div>
 
         <section className="alert-section">
-          {!alertSet ? (
+          {alertState === 'success' ? (
+            <div className="alert-success">{T.alertSuccess}</div>
+          ) : (
             <>
               <div className="alert-title">☀️ {T.alertTitle}</div>
               <div className="alert-sub">{T.alertSub}</div>
               <div className="alert-form">
-                <input className="alert-input" placeholder={T.alertPlaceholder}
-                  value={email} onChange={e => setEmail(e.target.value)} />
-                <button className="alert-btn" onClick={() => email && setAlertSet(true)}>{T.alertBtn}</button>
+                <input
+                  className="alert-input"
+                  placeholder={T.alertPlaceholder}
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSignup()}
+                  disabled={alertState === 'saving'}
+                />
+                <button
+                  className="alert-btn"
+                  onClick={handleSignup}
+                  disabled={alertState === 'saving' || !email}
+                >
+                  {alertState === 'saving' ? T.alertSaving : T.alertBtn}
+                </button>
               </div>
+              {alertState === 'error' && <div className="alert-error">{T.alertError}</div>}
             </>
-          ) : (
-            <div className="alert-success">{T.alertSuccess}</div>
           )}
         </section>
 
