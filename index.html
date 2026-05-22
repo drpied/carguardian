@@ -4,300 +4,593 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CarGuardian — Ford Donnacona</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
+    :root {
+      --navy: #001f5b;
+      --navy2: #002d82;
+      --gold: #c9952a;
+      --gold-light: #f0b429;
+      --cream: #faf8f3;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --white: #ffffff;
+      --card-shadow: 0 4px 24px rgba(0,31,91,0.10);
+      --radius: 16px;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Georgia, serif; background: #f4f6fb; color: #1a1a2e; }
-    .header { background: linear-gradient(135deg, #002366 0%, #003087 100%); padding: 0; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 24px; border-bottom: 1px solid rgba(255,255,255,0.15); }
-    .top-bar-text { color: rgba(255,255,255,0.75); font-size: 12px; }
-    .lang-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.4); color: #fff; border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: bold; cursor: pointer; }
-    .header-main { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px 14px; }
-    .dealer-name { color: #fff; font-size: 22px; font-weight: bold; margin-bottom: 2px; }
-    .tagline { color: #f0b429; font-size: 12px; font-style: italic; }
-    .hero { background: linear-gradient(160deg, #002366 0%, #001a4d 100%); padding: 36px 24px 32px; text-align: center; }
-    .hero-title { color: #fff; font-size: 26px; font-weight: bold; margin-bottom: 8px; }
-    .hero-sub { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 24px; max-width: 320px; margin-left: auto; margin-right: auto; line-height: 1.5; }
-    .morning-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(240,180,41,0.15); border: 1px solid rgba(240,180,41,0.4); border-radius: 20px; padding: 5px 14px; color: #f0b429; font-size: 12px; font-weight: bold; margin-bottom: 20px; }
-    .search-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 20px 16px; max-width: 480px; margin: 0 auto; }
-    .search-input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: #fff; font-size: 14px; font-family: Georgia, serif; outline: none; margin-bottom: 10px; }
-    .search-input::placeholder { color: rgba(255,255,255,0.45); }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .label { color: rgba(255,255,255,0.6); font-size: 11px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .select { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #1a3a6e; color: #fff; font-size: 13px; font-family: Georgia, serif; outline: none; } .select option { background: #1a3a6e; color: #fff; }
-    .price-display { color: #f0b429; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 6px; }
-    .range-input { width: 100%; accent-color: #f0b429; margin-bottom: 10px; }
-    .search-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f0b429 0%, #d4971a 100%); color: #002366; font-weight: bold; font-size: 15px; border: none; border-radius: 10px; cursor: pointer; font-family: Georgia, serif; margin-top: 4px; }
-    .results-section { padding: 20px 16px; max-width: 540px; margin: 0 auto; }
-    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .results-count { font-size: 14px; color: #444; font-style: italic; }
-    .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,35,102,0.08); margin-bottom: 14px; overflow: hidden; border: 1px solid rgba(0,35,102,0.07); }
-    .card-header { background: linear-gradient(135deg, #002366 0%, #003087 100%); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
-    .card-title { color: #fff; font-size: 15px; font-weight: bold; }
-    .card-year { color: #f0b429; font-size: 13px; font-weight: bold; }
-    .card-body { padding: 14px 16px; }
-    .card-img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; background: #eee; }
-    .card-price { font-size: 22px; font-weight: bold; color: #002366; margin-bottom: 6px; }
-    .card-meta { display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; font-size: 12px; color: #666; }
-    .badge-new { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; background: rgba(0,35,102,0.1); color: #002366; border: 1px solid rgba(0,35,102,0.2); }
-    .badge-used { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; background: rgba(240,180,41,0.15); color: #a07000; border: 1px solid rgba(240,180,41,0.3); }
-    .badge-today { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; margin-left: 6px; }
-    .source-tag { font-size: 10px; color: #999; font-style: italic; margin-bottom: 8px; }
-    .card-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-    .btn-primary { padding: 10px; background: linear-gradient(135deg, #002366 0%, #003087 100%); color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: Georgia, serif; }
-    .btn-secondary { padding: 10px; background: #fff; color: #002366; border: 1.5px solid #002366; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: Georgia, serif; }
-    .alert-section { background: linear-gradient(135deg, #002366 0%, #001a4d 100%); padding: 28px 24px; text-align: center; }
-    .alert-title { color: #f0b429; font-size: 18px; font-weight: bold; margin-bottom: 8px; }
-    .alert-sub { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
-    .alert-input { width: 100%; max-width: 300px; padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff; font-size: 14px; font-family: Georgia, serif; outline: none; display: block; margin: 0 auto 12px; }
-    .alert-btn { padding: 12px 28px; background: #f0b429; color: #002366; font-weight: bold; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; font-family: Georgia, serif; }
-    .footer { background: #1a1a2e; color: rgba(255,255,255,0.5); text-align: center; padding: 20px 16px; font-size: 11px; line-height: 1.8; }
-    .loader { text-align: center; padding: 40px 0; color: #002366; font-size: 14px; font-style: italic; }
+    body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--navy);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 11px; letter-spacing: 0.5px;
+    }
+    .top-bar-text { color: rgba(255,255,255,0.55); }
+    .top-bar-right { display: flex; align-items: center; gap: 12px; }
+    .lang-btn {
+      background: transparent; border: 1px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.7); border-radius: 20px;
+      padding: 3px 12px; font-size: 11px; font-weight: 600;
+      cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+    }
+    .lang-btn:hover { border-color: var(--gold-light); color: var(--gold-light); }
+    .header-main {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+    }
+    .dealer-name {
+      font-family: 'Playfair Display', serif;
+      color: var(--white); font-size: 24px; font-weight: 700;
+      letter-spacing: 0.3px; margin-bottom: 3px;
+    }
+    .tagline { color: var(--gold-light); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, #001040 0%, #002060 50%, #001a50 100%);
+      padding: 52px 28px 44px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 30% 40%, rgba(201,149,42,0.06) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 60%, rgba(0,80,255,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .morning-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(201,149,42,0.12); border: 1px solid rgba(201,149,42,0.35);
+      border-radius: 30px; padding: 6px 18px;
+      color: var(--gold-light); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px; margin-bottom: 24px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--white); font-size: 36px; font-weight: 900;
+      line-height: 1.15; margin-bottom: 12px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .hero-sub {
+      color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 300;
+      margin: 0 auto 32px; max-width: 340px; line-height: 1.6;
+    }
+
+    /* ── SEARCH CARD ── */
+    .search-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 24px 20px;
+      max-width: 500px; margin: 0 auto;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    }
+    .search-input {
+      width: 100%; padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: var(--white); font-size: 14px;
+      font-family: 'Inter', sans-serif; outline: none;
+      margin-bottom: 12px; transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--gold-light); }
+    .search-input::placeholder { color: rgba(255,255,255,0.35); }
+    .filters-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .filter-group {}
+    .filter-label {
+      color: rgba(255,255,255,0.45); font-size: 10px;
+      font-weight: 600; letter-spacing: 1.2px;
+      text-transform: uppercase; margin-bottom: 5px;
+      display: block;
+    }
+    .filter-select {
+      width: 100%; padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: #0a2060; color: var(--white);
+      font-size: 13px; font-family: 'Inter', sans-serif;
+      outline: none; cursor: pointer; transition: border-color 0.2s;
+      appearance: auto;
+    }
+    .filter-select:focus { border-color: var(--gold-light); }
+    .filter-select option { background: #0a2060; color: var(--white); }
+    .price-label {
+      color: var(--gold-light); font-size: 13px; font-weight: 600;
+      text-align: center; margin-bottom: 8px; letter-spacing: 0.3px;
+    }
+    .range-wrap { padding: 0 4px; margin-bottom: 14px; }
+    input[type=range] {
+      width: 100%; accent-color: var(--gold-light); cursor: pointer;
+    }
+    .search-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      color: var(--navy); font-weight: 700; font-size: 15px;
+      border: none; border-radius: 12px; cursor: pointer;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.5px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 16px rgba(201,149,42,0.35);
+    }
+    .search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,149,42,0.45); }
+    .search-btn:active { transform: translateY(0); }
+
+    /* ── RESULTS ── */
+    .results-wrap { max-width: 600px; margin: 0 auto; padding: 28px 20px; }
+    .results-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; padding-bottom: 14px;
+      border-bottom: 1px solid rgba(0,31,91,0.08);
+    }
+    .results-count {
+      font-size: 13px; color: var(--muted); font-style: italic;
+    }
+    .results-count strong { color: var(--navy); font-style: normal; font-size: 16px; }
+
+    /* ── CARD ── */
+    .car-card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--card-shadow); margin-bottom: 20px;
+      overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid rgba(0,31,91,0.06);
+      animation: slideUp 0.4s ease forwards; opacity: 0;
+    }
+    .car-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,31,91,0.15); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card-img-wrap { position: relative; height: 200px; overflow: hidden; background: #eef0f5; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+    .car-card:hover .card-img { transform: scale(1.03); }
+    .card-badges {
+      position: absolute; top: 12px; left: 12px;
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .badge {
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .badge-new { background: var(--navy); color: var(--white); }
+    .badge-used { background: rgba(255,255,255,0.92); color: var(--navy); border: 1px solid rgba(0,31,91,0.15); }
+    .badge-today { background: #d4edda; color: #1a5c2a; border: 1px solid #a5d6a7; }
+    .badge-donnacona { background: var(--gold-light); color: var(--navy); }
+    .card-body { padding: 18px 20px; }
+    .card-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700; color: var(--navy);
+      margin-bottom: 8px; line-height: 1.3;
+    }
+    .card-price {
+      font-size: 24px; font-weight: 700; color: var(--navy);
+      margin-bottom: 10px; letter-spacing: -0.5px;
+    }
+    .card-price span { font-size: 14px; font-weight: 400; color: var(--muted); }
+    .card-details {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      font-size: 12px; color: var(--muted);
+      margin-bottom: 14px; align-items: center;
+    }
+    .card-detail { display: flex; align-items: center; gap: 4px; }
+    .source-line { font-size: 10px; color: #bbb; margin-bottom: 14px; letter-spacing: 0.3px; }
+    .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-primary {
+      padding: 11px; background: var(--navy);
+      color: var(--white); border: none; border-radius: 10px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: background 0.2s;
+      text-align: center; text-decoration: none; display: block;
+    }
+    .btn-primary:hover { background: var(--navy2); }
+    .btn-secondary {
+      padding: 11px; background: var(--white);
+      color: var(--navy); border: 1.5px solid var(--navy);
+      border-radius: 10px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: background 0.2s; text-align: center;
+      text-decoration: none; display: block;
+    }
+    .btn-secondary:hover { background: var(--cream); }
+
+    /* ── LOAD MORE ── */
+    .load-more-wrap { text-align: center; margin: 8px 0 24px; }
+    .load-more-btn {
+      padding: 14px 36px;
+      background: var(--white); color: var(--navy);
+      border: 2px solid var(--navy); border-radius: 12px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: all 0.2s;
+    }
+    .load-more-btn:hover { background: var(--navy); color: var(--white); }
+
+    /* ── STATES ── */
+    .loader { text-align: center; padding: 48px 0; color: var(--navy); }
+    .loader-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--navy2);
+      animation: pulse 1s ease-in-out infinite alternate;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1.1); } }
+    .no-results { text-align: center; padding: 40px 20px; color: var(--muted); font-style: italic; }
     .error-msg { text-align: center; padding: 20px; color: #c00; font-style: italic; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+    /* ── ALERT ── */
+    .alert-section {
+      background: linear-gradient(135deg, var(--navy) 0%, #001040 100%);
+      padding: 48px 28px; text-align: center;
+      border-top: 3px solid var(--gold);
+    }
+    .alert-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold-light); font-size: 26px; font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .alert-sub { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .alert-form { display: flex; gap: 10px; max-width: 360px; margin: 0 auto; flex-wrap: wrap; }
+    .alert-input {
+      flex: 1; min-width: 200px; padding: 13px 18px;
+      border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08); color: var(--white);
+      font-size: 14px; font-family: 'Inter', sans-serif; outline: none;
+    }
+    .alert-input::placeholder { color: rgba(255,255,255,0.35); }
+    .alert-btn {
+      padding: 13px 22px; background: var(--gold-light); color: var(--navy);
+      font-weight: 700; font-size: 14px; border: none; border-radius: 10px;
+      cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap;
+    }
+    .alert-success { color: var(--gold-light); font-size: 16px; font-weight: 600; }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: #0a0e1a; color: rgba(255,255,255,0.35);
+      text-align: center; padding: 28px 20px; font-size: 11px; line-height: 2;
+    }
+    .footer-brand { color: rgba(255,255,255,0.7); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+    .footer-powered { color: rgba(255,255,255,0.2); font-size: 10px; margin-top: 8px; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState } = React;
+<div id="root"></div>
+<script type="text/babel">
+  const { useState } = React;
 
-    const t = {
-      fr: {
-        tagline: "On dépasse vos attentes",
-        heroTitle: "Trouvez votre prochain véhicule Ford",
-        heroSub: "Recherchez parmi des milliers de véhicules dans votre région",
-        searchPlaceholder: "Modèle, mots-clés...",
-        locationLabel: "Région",
-        maxPrice: "Prix maximum",
-        condition: "Condition",
-        all: "Tous", new: "Neuf", used: "Occasion",
-        searchBtn: "Rechercher",
-        results: "résultats trouvés",
-        newBadge: "NEUF", usedBadge: "OCCASION",
-        viewDetails: "Voir les détails", contact: "Contacter",
-        alertTitle: "Alertes quotidiennes",
-        alertSub: "Recevez chaque matin les nouveaux véhicules correspondant à vos critères",
-        alertEmail: "Votre courriel",
-        activateAlert: "Activer l'alerte",
-        morning: "Nouvelles annonces disponibles",
-        address: "128 Boul. Les Écureuils, Donnacona, QC",
-        todayBadge: "🆕 Nouveau",
-        noResults: "Aucun résultat trouvé. Essayez d'élargir votre recherche.",
-        loading: "Recherche en cours...",
-        lang: "EN", sortNew: "Plus récents", sortPrice: "Prix croissant", sortPriceDesc: "Prix décroissant", sortBy: "Trier par"
-      },
-      en: {
-        tagline: "We exceed your expectations",
-        heroTitle: "Find your next Ford vehicle",
-        heroSub: "Search thousands of vehicles in your region",
-        searchPlaceholder: "Model, keywords...",
-        locationLabel: "Region",
-        maxPrice: "Max price",
-        condition: "Condition",
-        all: "All", new: "New", used: "Pre-owned",
-        searchBtn: "Search",
-        results: "results found",
-        newBadge: "NEW", usedBadge: "PRE-OWNED",
-        viewDetails: "View details", contact: "Contact",
-        alertTitle: "Daily alerts",
-        alertSub: "Receive new matching vehicles every morning in your inbox",
-        alertEmail: "Your email",
-        activateAlert: "Activate alert",
-        morning: "New listings available",
-        address: "128 Boul. Les Écureuils, Donnacona, QC",
-        todayBadge: "🆕 New",
-        noResults: "No results found. Try expanding your search.",
-        loading: "Searching...",
-        lang: "FR", sortNew: "Most recent", sortPrice: "Price: low to high", sortPriceDesc: "Price: high to low", sortBy: "Sort by"
-      }
+  const copy = {
+    fr: {
+      tagline: "ON DÉPASSE VOS ATTENTES",
+      morning: "Nouvelles annonces disponibles",
+      heroTitle: "Trouvez votre prochain véhicule Ford",
+      heroSub: "Des milliers de véhicules Ford neufs et d'occasion dans votre région — en un seul endroit",
+      placeholder: "Modèle, mots-clés (ex: F-150, Bronco...)",
+      condLabel: "Condition", sortLabel: "Trier par",
+      condAll: "Tous les véhicules", condNew: "Neuf", condUsed: "Occasion",
+      sortRecent: "Plus récents", sortPriceAsc: "Prix croissant", sortPriceDesc: "Prix décroissant",
+      maxPrice: "Prix maximum",
+      searchBtn: "Rechercher",
+      results: "résultats trouvés",
+      viewBtn: "Voir les détails", contactBtn: "Contacter",
+      today: "Nouveau aujourd'hui", donnacona: "Ford Donnacona",
+      prixSurDemande: "Prix sur demande",
+      noResults: "Aucun résultat. Essayez d'élargir vos critères.",
+      loading: "Recherche en cours...",
+      loadMore: "Charger plus de résultats",
+      alertTitle: "Alertes quotidiennes",
+      alertSub: "Recevez chaque matin les nouveaux véhicules correspondant à vos critères directement dans votre boîte courriel.",
+      alertPlaceholder: "Votre adresse courriel",
+      alertBtn: "Activer l'alerte",
+      alertSuccess: "✅ Alerte activée !",
+      address: "128 Boul. Les Écureuils, Donnacona QC",
+      lang: "EN", km: "km"
+    },
+    en: {
+      tagline: "WE EXCEED YOUR EXPECTATIONS",
+      morning: "New listings available",
+      heroTitle: "Find your next Ford vehicle",
+      heroSub: "Thousands of new and pre-owned Ford vehicles in your region — all in one place",
+      placeholder: "Model, keywords (e.g. F-150, Bronco...)",
+      condLabel: "Condition", sortLabel: "Sort by",
+      condAll: "All vehicles", condNew: "New", condUsed: "Pre-owned",
+      sortRecent: "Most recent", sortPriceAsc: "Price: low to high", sortPriceDesc: "Price: high to low",
+      maxPrice: "Max price",
+      searchBtn: "Search",
+      results: "results found",
+      viewBtn: "View details", contactBtn: "Contact",
+      today: "New today", donnacona: "Ford Donnacona",
+      prixSurDemande: "Price on request",
+      noResults: "No results. Try expanding your search criteria.",
+      loading: "Searching...",
+      loadMore: "Load more results",
+      alertTitle: "Daily alerts",
+      alertSub: "Receive new matching vehicles every morning directly in your inbox.",
+      alertPlaceholder: "Your email address",
+      alertBtn: "Activate alert",
+      alertSuccess: "✅ Alert activated!",
+      address: "128 Boul. Les Écureuils, Donnacona QC",
+      lang: "FR", km: "km"
+    }
+  };
+
+  function FordLogo() {
+    return (
+      <svg viewBox="0 0 120 50" width="90" height="38" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="60" cy="25" rx="57" ry="22" fill="#002d82" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
+        <ellipse cx="60" cy="25" rx="54" ry="19" fill="#002d82" stroke="rgba(255,255,255,0.8)" strokeWidth="1.2"/>
+        <text x="60" y="33" textAnchor="middle" fontFamily="Georgia, serif" fontSize="21" fontWeight="bold" fill="white" fontStyle="italic" letterSpacing="1.5">Ford</text>
+      </svg>
+    );
+  }
+
+  function App() {
+    const [lang, setLang] = useState("fr");
+    const T = copy[lang];
+    const [model, setModel] = useState("");
+    const [maxPrice, setMaxPrice] = useState(150000);
+    const [condition, setCondition] = useState("");
+    const [sort, setSort] = useState("recent");
+    const [listings, setListings] = useState([]);
+    const [total, setTotal] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [error, setError] = useState("");
+    const [email, setEmail] = useState("");
+    const [alertSet, setAlertSet] = useState(false);
+    const [searched, setSearched] = useState(false);
+    const [page, setPage] = useState(0);
+
+    const fmtPrice = (p) => p
+      ? p.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 })
+      : T.prixSurDemande;
+
+    const fmtKm = (m) => m ? `${m.toLocaleString()} ${T.km}` : "";
+
+    const buildUrl = (pageNum) => {
+      let sortBy = 'first_seen_at_mc', sortOrder = 'desc';
+      if (sort === 'price_asc') { sortBy = 'price'; sortOrder = 'asc'; }
+      if (sort === 'price_desc') { sortBy = 'price'; sortOrder = 'desc'; }
+      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=20&start=${pageNum * 20}&sort_by=${sortBy}&sort_order=${sortOrder}`;
+      if (condition) url += `&condition=${condition}`;
+      if (maxPrice < 150000) url += `&price_max=${maxPrice}`;
+      return url;
     };
 
-    function FordLogo() {
-      return (
-        <svg viewBox="0 0 120 50" width="100" height="42" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="60" cy="25" rx="58" ry="23" fill="#003087" stroke="#fff" strokeWidth="1.5"/>
-          <text x="60" y="33" textAnchor="middle" fontFamily="serif" fontSize="22" fontWeight="bold" fill="white" fontStyle="italic" letterSpacing="1">Ford</text>
-        </svg>
-      );
-    }
-
-    function App() {
-      const [lang, setLang] = useState("fr");
-      const T = t[lang];
-      const [model, setModel] = useState("");
-      const [maxPrice, setMaxPrice] = useState(100000);
-      const [condition, setCondition] = useState("");
-      const [sort, setSort] = useState("recent");
-      const [listings, setListings] = useState([]);
-      const [total, setTotal] = useState(null);
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-      const [email, setEmail] = useState("");
-      const [alertSet, setAlertSet] = useState(false);
-      const [searched, setSearched] = useState(false);
-
-      const formatPrice = (p) => p ? p.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 }) : "Prix sur demande";
-      const formatKm = (m) => m ? `${m.toLocaleString()} km` : "";
-
-      const handleSearch = async () => {
-        setLoading(true);
-        setError("");
-        setSearched(true);
-        try {
-          let sortBy = 'first_seen_at_mc'; let sortOrder = 'desc'; if (sort === 'price_asc') { sortBy = 'price'; sortOrder = 'asc'; } if (sort === 'price_desc') { sortBy = 'price'; sortOrder = 'desc'; } let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=20&sort_by=${sortBy}&sort_order=${sortOrder}`;
-          if (condition) url += `&condition=${condition}`;
-          if (maxPrice < 100000) url += `&price_max=${maxPrice}`;
-          const res = await fetch(url);
-          const data = await res.json();
-          let results = data.listings || [];
-          if (model.trim()) {
-            const q = model.toLowerCase();
-            results = results.filter(l => l.heading && l.heading.toLowerCase().includes(q));
-          }
-          setListings(results);
-          setTotal(data.num_found || 0);
-        } catch(e) {
-          setError("Erreur de connexion. Veuillez réessayer.");
+    const handleSearch = async () => {
+      setLoading(true); setError(""); setSearched(true); setPage(0);
+      try {
+        const res = await fetch(buildUrl(0));
+        const data = await res.json();
+        let results = data.listings || [];
+        if (model.trim()) {
+          const q = model.toLowerCase();
+          results = results.filter(l => l.heading && l.heading.toLowerCase().includes(q));
         }
-        setLoading(false);
-      };
+        setListings(results);
+        setTotal(data.num_found || 0);
+      } catch(e) { setError("Erreur de connexion. Veuillez réessayer."); }
+      setLoading(false);
+    };
 
-      const isToday = (listing) => {
-        const ts = listing.first_seen_at_mc;
-        if (!ts) return false;
-        const d = new Date(ts * 1000);
-        const now = new Date();
-        return d.toDateString() === now.toDateString();
-      };
+    const handleLoadMore = async () => {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      try {
+        const res = await fetch(buildUrl(nextPage));
+        const data = await res.json();
+        let results = data.listings || [];
+        if (model.trim()) {
+          const q = model.toLowerCase();
+          results = results.filter(l => l.heading && l.heading.toLowerCase().includes(q));
+        }
+        setListings(prev => [...prev, ...results]);
+        setPage(nextPage);
+      } catch(e) {}
+      setLoadingMore(false);
+    };
 
-      const isDonnacona = (listing) => listing.dealer && listing.dealer.website === "forddonnacona.com";
+    const isToday = (l) => {
+      if (!l.first_seen_at_mc) return false;
+      const d = new Date(l.first_seen_at_mc * 1000);
+      return d.toDateString() === new Date().toDateString();
+    };
 
-      return (
-        <div>
-          {/* Header */}
-          <div className="header">
-            <div className="top-bar">
-              <span className="top-bar-text">📍 {T.address}</span>
-              <button className="lang-btn" onClick={() => setLang(lang === "fr" ? "en" : "fr")}>{T.lang}</button>
-            </div>
-            <div className="header-main">
-              <div>
-                <div className="dealer-name">Ford Donnacona</div>
-                <div className="tagline">✦ {T.tagline} ✦</div>
-              </div>
-              <FordLogo />
-            </div>
-          </div>
+    const isDonnacona = (l) => l.dealer && l.dealer.website === "forddonnacona.com";
 
-          {/* Hero */}
-          <div className="hero">
-            <div className="morning-badge">☀️ {T.morning}</div>
-            <div className="hero-title">{T.heroTitle}</div>
-            <div className="hero-sub">{T.heroSub}</div>
-            <div className="search-card">
-              <input className="search-input" placeholder={T.searchPlaceholder} value={model} onChange={e => setModel(e.target.value)} />
-              <div className="row">
-                <div>
-                  <div className="label">{T.condition}</div>
-                  <select className="select" value={condition} onChange={e => setCondition(e.target.value)}>
-                   <option value="">{lang === 'fr' ? 'Tous' : 'All'}</option>
-<option value="new">{lang === 'fr' ? 'Neuf' : 'New'}</option>
-<option value="used">{lang === 'fr' ? 'Occasion' : 'Pre-owned'}</option>
-                  </select>
-                </div>
-                <div>
-                  <div className="label">{T.sortBy}</div>
-                  <select className="select" value={sort} onChange={e => setSort(e.target.value)}>
-                    <option value="recent">{lang === 'fr' ? 'Plus récents' : 'Most recent'}</option>
-<option value="price_asc">{lang === 'fr' ? 'Prix croissant' : 'Price: low to high'}</option>
-<option value="price_desc">{lang === 'fr' ? 'Prix décroissant' : 'Price: high to low'}</option>
-                  </select>
-                </div>
-              </div>
-              <div className="price-display">{T.maxPrice}: {formatPrice(maxPrice)}</div>
-              <input type="range" min={10000} max={150000} step={1000} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} className="range-input" />
-              <button className="search-btn" onClick={handleSearch}>🔍 {T.searchBtn}</button>
+    const handleKey = (e) => { if (e.key === 'Enter') handleSearch(); };
+
+    return (
+      <div>
+        {/* HEADER */}
+        <header className="header">
+          <div className="top-bar">
+            <span className="top-bar-text">📍 {T.address} · 418-285-3311</span>
+            <div className="top-bar-right">
+              <button className="lang-btn" onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}>{T.lang}</button>
             </div>
           </div>
+          <div className="header-main">
+            <div>
+              <div className="dealer-name">Ford Donnacona</div>
+              <div className="tagline">{T.tagline}</div>
+            </div>
+            <FordLogo />
+          </div>
+        </header>
 
-          {/* Results */}
-          <div className="results-section">
-            {loading && <div className="loader">⏳ {T.loading}</div>}
-            {error && <div className="error-msg">{error}</div>}
-            {!loading && searched && !error && (
-              <>
-                <div className="results-header">
-                  <div className="results-count"><strong>{total?.toLocaleString()}</strong> {T.results}</div>
+        {/* HERO */}
+        <section className="hero">
+          <div className="morning-badge">☀️ {T.morning}</div>
+          <h1 className="hero-title">{T.heroTitle}</h1>
+          <p className="hero-sub">{T.heroSub}</p>
+
+          <div className="search-card">
+            <input
+              className="search-input"
+              placeholder={T.placeholder}
+              value={model}
+              onChange={e => setModel(e.target.value)}
+              onKeyDown={handleKey}
+            />
+            <div className="filters-row">
+              <div className="filter-group">
+                <label className="filter-label">{T.condLabel}</label>
+                <select className="filter-select" value={condition} onChange={e => setCondition(e.target.value)}>
+                  <option value="">{T.condAll}</option>
+                  <option value="new">{T.condNew}</option>
+                  <option value="used">{T.condUsed}</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label className="filter-label">{T.sortLabel}</label>
+                <select className="filter-select" value={sort} onChange={e => setSort(e.target.value)}>
+                  <option value="recent">{T.sortRecent}</option>
+                  <option value="price_asc">{T.sortPriceAsc}</option>
+                  <option value="price_desc">{T.sortPriceDesc}</option>
+                </select>
+              </div>
+            </div>
+            <div className="price-label">
+              {T.maxPrice}: {maxPrice >= 150000
+                ? (lang === 'fr' ? 'Aucune limite' : 'No limit')
+                : maxPrice.toLocaleString("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 })}
+            </div>
+            <div className="range-wrap">
+              <input type="range" min={10000} max={150000} step={1000} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
+            </div>
+            <button className="search-btn" onClick={handleSearch}>🔍 {T.searchBtn}</button>
+          </div>
+        </section>
+
+        {/* RESULTS */}
+        <div className="results-wrap">
+          {loading && (
+            <div className="loader">
+              <div style={{fontSize:14, color:'#666', marginBottom:8}}>{T.loading}</div>
+              <div className="loader-dots">
+                <div className="dot" /><div className="dot" /><div className="dot" />
+              </div>
+            </div>
+          )}
+          {error && <div className="error-msg">{error}</div>}
+          {!loading && searched && !error && (
+            <>
+              <div className="results-meta">
+                <div className="results-count">
+                  <strong>{total?.toLocaleString()}</strong> {T.results}
                 </div>
-                {listings.length === 0 && <div className="error-msg">{T.noResults}</div>}
-                {listings.map((car, i) => (
-                  <div key={car.id} className="card fade-in" style={{animationDelay: `${i * 0.06}s`}}>
-                    <div className="card-header">
-                      <div className="card-title">{car.heading}</div>
-                      <div className="card-year">{car.build?.year}</div>
-                    </div>
-                    <div className="card-body">
-                      {car.media?.photo_links?.[0] && (
-                        <img className="card-img" src={car.media.photo_links[0]} alt={car.heading} onError={e => e.target.style.display='none'} />
-                      )}
-                      <div className="card-price">{formatPrice(car.price)}</div>
-                      <div className="card-meta">
-                        <span className={car.inventory_type === "new" ? "badge-new" : "badge-used"}>
-                          {car.inventory_type === "new" ? T.newBadge : T.usedBadge}
-                        </span>
-                        {car.miles ? <span>🛣️ {formatKm(car.miles)}</span> : null}
-                        {car.dealer?.city ? <span>📍 {car.dealer.city}, {car.dealer.state}</span> : null}
-                        {isDonnacona(car) ? <span style={{color:"#003087", fontWeight:"bold"}}>⭐ Ford Donnacona</span> : null}
-                        {isToday(car) ? <span className="badge-today">{T.todayBadge}</span> : null}
-                      </div>
-                      <div className="source-tag">Source: {car.source}</div>
-                      <div className="card-btns">
-                        <a href={car.vdp_url} target="_blank" rel="noopener noreferrer">
-                          <button className="btn-primary" style={{width:"100%"}}>{T.viewDetails}</button>
-                        </a>
-                        <a href={`tel:${car.dealer?.phone || "4182853311"}`}>
-                          <button className="btn-secondary" style={{width:"100%"}}>{T.contact}</button>
-                        </a>
-                      </div>
+              </div>
+
+              {listings.length === 0 && <div className="no-results">{T.noResults}</div>}
+
+              {listings.map((car, i) => (
+                <div key={car.id + i} className="car-card" style={{animationDelay: `${Math.min(i, 10) * 0.06}s`}}>
+                  <div className="card-img-wrap">
+                    {car.media?.photo_links?.[0]
+                      ? <img className="card-img" src={car.media.photo_links[0]} alt={car.heading} onError={e => { e.target.style.display='none'; }} />
+                      : <div style={{height:'100%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:40}}>🚗</div>
+                    }
+                    <div className="card-badges">
+                      <span className={car.inventory_type === 'new' ? 'badge badge-new' : 'badge badge-used'}>
+                        {car.inventory_type === 'new' ? T.condNew : T.condUsed}
+                      </span>
+                      {isDonnacona(car) && <span className="badge badge-donnacona">⭐ {T.donnacona}</span>}
+                      {isToday(car) && <span className="badge badge-today">🆕 {T.today}</span>}
                     </div>
                   </div>
-                ))}
-              </>
-            )}
-          </div>
+                  <div className="card-body">
+                    <div className="card-heading">{car.heading}</div>
+                    <div className="card-price">
+                      {fmtPrice(car.price)}
+                      {car.miles ? <span> · {fmtKm(car.miles)}</span> : null}
+                    </div>
+                    <div className="card-details">
+                      {car.dealer?.city && <span className="card-detail">📍 {car.dealer.city}, {car.dealer.state}</span>}
+                      {car.build?.fuel_type && <span className="card-detail">⛽ {car.build.fuel_type}</span>}
+                      {car.build?.drivetrain && <span className="card-detail">⚙️ {car.build.drivetrain}</span>}
+                      {car.dom && <span className="card-detail">📅 {car.dom}j</span>}
+                    </div>
+                    <div className="source-line">Source: {car.source}</div>
+                    <div className="card-actions">
+                      <a href={car.vdp_url} target="_blank" rel="noopener noreferrer" className="btn-primary">{T.viewBtn}</a>
+                      <a href={`tel:${car.dealer?.phone || '4182853311'}`} className="btn-secondary">{T.contactBtn}</a>
+                    </div>
+                  </div>
+                </div>
+              ))}
 
-          {/* Alert */}
-          <div className="alert-section">
-            {!alertSet ? (
-              <>
-                <div className="alert-title">☀️ {T.alertTitle}</div>
-                <div className="alert-sub">{T.alertSub}</div>
-                <input className="alert-input" placeholder={T.alertEmail} value={email} onChange={e => setEmail(e.target.value)} />
-                <button className="alert-btn" onClick={() => email && setAlertSet(true)}>{T.activateAlert}</button>
-              </>
-            ) : (
-              <div style={{color:"#fff", fontSize:16}}>✅ {lang === "fr" ? `Alerte activée pour ${email}` : `Alert set for ${email}`}</div>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="footer">
-            <div style={{marginBottom:8}}><FordLogo /></div>
-            <div><strong style={{color:"#fff"}}>Ford Donnacona</strong></div>
-            <div>128 Boulevard Les Écureuils, Donnacona, QC G3M 0J2</div>
-            <div style={{marginTop:6, color:"rgba(255,255,255,0.3)", fontSize:10}}>
-              © 2026 CarGuardian · Propulsé par CarGuardian.ai
-            </div>
-          </div>
+              {listings.length > 0 && listings.length < (total || 0) && (
+                <div className="load-more-wrap">
+                  <button className="load-more-btn" onClick={handleLoadMore} disabled={loadingMore}>
+                    {loadingMore ? '...' : `⬇️ ${T.loadMore}`}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
-      );
-    }
 
-    ReactDOM.render(<App />, document.getElementById("root"));
-  </script>
+        {/* ALERT */}
+        <section className="alert-section">
+          {!alertSet ? (
+            <>
+              <div className="alert-title">☀️ {T.alertTitle}</div>
+              <div className="alert-sub">{T.alertSub}</div>
+              <div className="alert-form">
+                <input className="alert-input" placeholder={T.alertPlaceholder} value={email} onChange={e => setEmail(e.target.value)} />
+                <button className="alert-btn" onClick={() => email && setAlertSet(true)}>{T.alertBtn}</button>
+              </div>
+            </>
+          ) : (
+            <div className="alert-success">{T.alertSuccess}</div>
+          )}
+        </section>
+
+        {/* FOOTER */}
+        <footer className="footer">
+          <div className="footer-brand">Ford Donnacona</div>
+          <div>128 Boulevard Les Écureuils, Donnacona, QC G3M 0J2</div>
+          <div>418-285-3311 · forddonnacona.com</div>
+          <div className="footer-powered">PROPULSÉ PAR CARGUARDIAN.AI</div>
+        </footer>
+      </div>
+    );
+  }
+
+  ReactDOM.render(<App />, document.getElementById('root'));
+</script>
 </body>
 </html>
