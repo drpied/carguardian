@@ -111,7 +111,7 @@
   const DONNA_LAT = '46.683713';
   const DONNA_LNG = '-71.734071';
   const DONNA_RADIUS = '8';
-  const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbw43zaaffGR4Lrg9dfEP4-H0ySOHP-O6UtGhW97Ij9XKOcfzLizEYWWUJTEz1MEqPpYtQ/exec';
+  const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbxmDy6Cwq_5kpSWrX1cWvWTxVm1cAx3ALFSBUjswGStlUBylJVffsld8MwTJ37nLcHhiw/exec';
 
   const copy = {
     fr: {
@@ -318,20 +318,18 @@
       if (!email || !email.includes('@')) return;
       setAlertState("saving");
       try {
-        await fetch(SIGNUP_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            lang,
-            model: model || '',
-            condition: condition || '',
-            sort: sort || 'recent',
-            maxPrice
-          })
+        const params = new URLSearchParams({
+          email,
+          lang,
+          model: model || '',
+          condition: condition || '',
+          sort: sort || 'recent',
+          maxPrice: maxPrice.toString()
         });
-        // no-cors means we can't read response — assume success
+        await fetch(SIGNUP_URL + '?' + params.toString(), {
+          method: 'GET',
+          mode: 'no-cors'
+        });
         setAlertState("success");
       } catch(e) {
         setAlertState("error");
