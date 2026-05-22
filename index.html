@@ -162,13 +162,13 @@
     }
   };
 
-  function FordLogo() {
+  function FordLogo({ width }) {
     return (
-      <svg viewBox="0 0 120 50" width="90" height="38" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="60" cy="25" rx="57" ry="22" fill="#002d82" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
-        <ellipse cx="60" cy="25" rx="54" ry="19" fill="#002d82" stroke="rgba(255,255,255,0.8)" strokeWidth="1.2"/>
-        <text x="60" y="33" textAnchor="middle" fontFamily="Georgia, serif" fontSize="21" fontWeight="bold" fill="white" fontStyle="italic" letterSpacing="1.5">Ford</text>
-      </svg>
+      <img
+        src="/forddonnacona-logo-fr.webp"
+        alt="Ford Donnacona"
+        style={{width: width || 130, height: 'auto', filter: 'brightness(0) invert(1)'}}
+      />
     );
   }
 
@@ -454,7 +454,7 @@
         </section>
 
         <footer className="footer">
-          <div className="footer-brand">Ford Donnacona</div>
+          <div style={{marginBottom:8}}><img src="/forddonnacona-logo-fr.webp" alt="Ford Donnacona" style={{width:160, height:'auto', filter:'brightness(0) invert(1)', opacity:0.8}} /></div>
           <div>128 Boulevard Les Écureuils, Donnacona, QC G3M 0J2</div>
           <div>418-285-3311 · forddonnacona.com</div>
           <div className="footer-powered">PROPULSÉ PAR CARGUARDIAN.AI</div>
