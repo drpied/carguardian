@@ -226,7 +226,7 @@
             {isDonnacona && (
               <a href={car.vdp_url} target="_blank" rel="noopener noreferrer" className="btn-primary">{T.viewBtn}</a>
             )}
-            <button className="btn-secondary" onClick={() => onContact && onContact(car)}>{T.contactBtn}</button>
+            <button className="btn-secondary" onClick={() => onContact && onContact(car)}>{T.contactBtn} — Ford Donnacona</button>
           </div>
         </div>
       </div>
@@ -261,7 +261,7 @@
 
     const handleContact = (car) => {
       if (isMobile()) {
-        window.location.href = 'tel:4182853311';
+        window.location.href = 'tel:+14182853311';
       } else {
         setContactCar(car);
         setContactName('');
