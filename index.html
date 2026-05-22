@@ -10,16 +10,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
     :root {
-      --navy: #001f5b;
-      --navy2: #002d82;
-      --gold: #c9952a;
-      --gold-light: #f0b429;
-      --cream: #faf8f3;
-      --text: #1a1a2e;
-      --muted: #6b7280;
-      --white: #ffffff;
-      --card-shadow: 0 4px 24px rgba(0,31,91,0.10);
-      --radius: 16px;
+      --navy: #001f5b; --navy2: #002d82; --gold: #c9952a; --gold-light: #f0b429;
+      --cream: #faf8f3; --text: #1a1a2e; --muted: #6b7280; --white: #ffffff;
+      --card-shadow: 0 4px 24px rgba(0,31,91,0.10); --radius: 16px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); }
@@ -87,8 +80,8 @@
     .btn-secondary { padding: 11px; background: var(--white); color: var(--navy); border: 1.5px solid var(--navy); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; text-decoration: none; display: block; transition: background 0.2s; }
     .btn-secondary:hover { background: var(--cream); }
 
-    .donnacona-divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 20px; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-    .donnacona-divider::before, .donnacona-divider::after { content: ''; flex: 1; height: 1px; background: rgba(0,31,91,0.1); }
+    .region-divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 20px; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+    .region-divider::before, .region-divider::after { content: ''; flex: 1; height: 1px; background: rgba(0,31,91,0.1); }
 
     .load-more-wrap { text-align: center; margin: 8px 0 24px; }
     .load-more-btn { padding: 14px 36px; background: var(--white); color: var(--navy); border: 2px solid var(--navy); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
@@ -124,7 +117,7 @@
 <script type="text/babel">
   const { useState } = React;
 
-  const DONNACONA_DEALER_ID = '1122841';
+  const DONNACONA_SOURCE = 'forddonnacona.com';
 
   const copy = {
     fr: {
@@ -142,16 +135,13 @@
       today: "Nouveau", donnacona: "Ford Donnacona",
       prixSurDemande: "Prix sur demande",
       noResults: "Aucun résultat. Essayez d'élargir vos critères.",
-      loading: "Recherche en cours...",
-      loadMore: "Charger plus de résultats",
+      loading: "Recherche en cours...", loadMore: "Charger plus de résultats",
       otherDealers: "Autres véhicules dans la région",
       alertTitle: "Alertes quotidiennes",
       alertSub: "Recevez chaque matin les nouveaux véhicules correspondant à vos critères.",
-      alertPlaceholder: "Votre adresse courriel",
-      alertBtn: "Activer",
+      alertPlaceholder: "Votre adresse courriel", alertBtn: "Activer",
       alertSuccess: "✅ Alerte activée — vous recevrez les nouveaux véhicules chaque matin!",
-      address: "128 Boul. Les Écureuils, Donnacona QC",
-      lang: "EN", km: "km"
+      address: "128 Boul. Les Écureuils, Donnacona QC", lang: "EN", km: "km"
     },
     en: {
       tagline: "WE EXCEED YOUR EXPECTATIONS",
@@ -168,16 +158,13 @@
       today: "New today", donnacona: "Ford Donnacona",
       prixSurDemande: "Price on request",
       noResults: "No results. Try expanding your search criteria.",
-      loading: "Searching...",
-      loadMore: "Load more results",
+      loading: "Searching...", loadMore: "Load more results",
       otherDealers: "Other vehicles in the region",
       alertTitle: "Daily alerts",
       alertSub: "Receive new matching vehicles every morning directly in your inbox.",
-      alertPlaceholder: "Your email address",
-      alertBtn: "Activate",
+      alertPlaceholder: "Your email address", alertBtn: "Activate",
       alertSuccess: "✅ Alert activated — you'll receive new vehicles every morning!",
-      address: "128 Boul. Les Écureuils, Donnacona QC",
-      lang: "FR", km: "km"
+      address: "128 Boul. Les Écureuils, Donnacona QC", lang: "FR", km: "km"
     }
   };
 
@@ -192,7 +179,7 @@
   }
 
   function CarCard({ car, index, T }) {
-    const isDonnacona = car.dealer && car.dealer.website === 'forddonnacona.com';
+    const isDonnacona = car.source === DONNACONA_SOURCE;
     const isToday = car.first_seen_at_mc &&
       new Date(car.first_seen_at_mc * 1000).toDateString() === new Date().toDateString();
     const fmtPrice = (p) => p
@@ -246,7 +233,8 @@
     const [maxPrice, setMaxPrice] = useState(150000);
     const [condition, setCondition] = useState("");
     const [sort, setSort] = useState("recent");
-    const [allListings, setAllListings] = useState([]);
+    const [donnaCards, setDonnaCards] = useState([]);
+    const [otherCards, setOtherCards] = useState([]);
     const [total, setTotal] = useState(null);
     const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -255,44 +243,55 @@
     const [alertSet, setAlertSet] = useState(false);
     const [searched, setSearched] = useState(false);
     const [page, setPage] = useState(0);
-    const [hasDonnacona, setHasDonnacona] = useState(false);
 
-    const getSortParams = () => {
-      if (sort === 'price_asc') return { sort_by: 'price', sort_order: 'asc' };
-      if (sort === 'price_desc') return { sort_by: 'price', sort_order: 'desc' };
-      return { sort_by: 'first_seen_at_mc', sort_order: 'desc' };
-    };
-
-    const buildUrl = (pageNum, dealerId) => {
-      const { sort_by, sort_order } = getSortParams();
-      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=20&start=${pageNum * 20}&sort_by=${sort_by}&sort_order=${sort_order}`;
+    const buildUrl = (pageNum) => {
+      let sort_by = 'first_seen_at_mc', sort_order = 'desc';
+      if (sort === 'price_asc') { sort_by = 'price'; sort_order = 'asc'; }
+      if (sort === 'price_desc') { sort_by = 'price'; sort_order = 'desc'; }
+      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=50&start=${pageNum * 50}&sort_by=${sort_by}&sort_order=${sort_order}`;
       if (condition) url += `&condition=${condition}`;
       if (maxPrice < 150000) url += `&price_max=${maxPrice}`;
       if (model.trim()) url += `&query=${encodeURIComponent(model.trim())}`;
-      if (dealerId) url += `&dealer_id=${dealerId}`;
       return url;
     };
 
-    const mergeListings = (donnaListings, mainListings) => {
-      const donnaIds = new Set(donnaListings.map(l => l.id));
-      const others = mainListings.filter(l => !donnaIds.has(l.id));
-      return [...donnaListings, ...others];
+    // Sort a list by chosen sort, pushing no-price to end
+    const clientSort = (listings) => {
+      if (sort === 'price_asc') {
+        return [...listings].sort((a, b) => {
+          if (!a.price && !b.price) return 0;
+          if (!a.price) return 1;
+          if (!b.price) return -1;
+          return a.price - b.price;
+        });
+      }
+      if (sort === 'price_desc') {
+        return [...listings].sort((a, b) => {
+          if (!a.price && !b.price) return 0;
+          if (!a.price) return 1;
+          if (!b.price) return -1;
+          return b.price - a.price;
+        });
+      }
+      // recent: already sorted by API
+      return listings;
+    };
+
+    const splitAndSort = (listings) => {
+      const donna = listings.filter(l => l.source === DONNACONA_SOURCE);
+      const others = listings.filter(l => l.source !== DONNACONA_SOURCE);
+      return { donna: clientSort(donna), others: clientSort(others) };
     };
 
     const handleSearch = async () => {
       setLoading(true); setError(""); setSearched(true); setPage(0);
       try {
-        const [mainRes, donnaRes] = await Promise.all([
-          fetch(buildUrl(0, '')),
-          fetch(buildUrl(0, DONNACONA_DEALER_ID))
-        ]);
-        const mainData = await mainRes.json();
-        const donnaData = await donnaRes.json();
-        const donnaListings = donnaData.listings || [];
-        const mainListings = mainData.listings || [];
-        setHasDonnacona(donnaListings.length > 0);
-        setAllListings(mergeListings(donnaListings, mainListings));
-        setTotal(mainData.num_found || 0);
+        const res = await fetch(buildUrl(0));
+        const data = await res.json();
+        const { donna, others } = splitAndSort(data.listings || []);
+        setDonnaCards(donna);
+        setOtherCards(others);
+        setTotal(data.num_found || 0);
       } catch(e) { setError("Erreur de connexion. Veuillez réessayer."); }
       setLoading(false);
     };
@@ -301,18 +300,19 @@
       setLoadingMore(true);
       const nextPage = page + 1;
       try {
-        const res = await fetch(buildUrl(nextPage, ''));
+        const res = await fetch(buildUrl(nextPage));
         const data = await res.json();
-        const donnaIds = new Set(allListings.filter(l => l.dealer && l.dealer.website === 'forddonnacona.com').map(l => l.id));
-        const newOthers = (data.listings || []).filter(l => !donnaIds.has(l.id));
-        setAllListings(prev => [...prev, ...newOthers]);
+        const existingIds = new Set([...donnaCards, ...otherCards].map(l => l.id));
+        const fresh = (data.listings || []).filter(l => !existingIds.has(l.id));
+        const { donna, others } = splitAndSort(fresh);
+        setDonnaCards(prev => [...prev, ...donna]);
+        setOtherCards(prev => [...prev, ...others]);
         setPage(nextPage);
       } catch(e) {}
       setLoadingMore(false);
     };
 
-    const donnaconaCards = allListings.filter(l => l.dealer && l.dealer.website === 'forddonnacona.com');
-    const otherCards = allListings.filter(l => !l.dealer || l.dealer.website !== 'forddonnacona.com');
+    const totalShown = donnaCards.length + otherCards.length;
 
     return (
       <div>
@@ -374,35 +374,27 @@
           {loading && (
             <div className="loader">
               <div className="loader-text">{T.loading}</div>
-              <div className="loader-dots">
-                <div className="dot"/><div className="dot"/><div className="dot"/>
-              </div>
+              <div className="loader-dots"><div className="dot"/><div className="dot"/><div className="dot"/></div>
             </div>
           )}
           {error && <div className="error-msg">{error}</div>}
           {!loading && searched && !error && (
             <>
               <div className="results-meta">
-                <div className="results-count">
-                  <strong>{total ? total.toLocaleString() : 0}</strong> {T.results}
-                </div>
+                <div className="results-count"><strong>{total ? total.toLocaleString() : 0}</strong> {T.results}</div>
               </div>
 
-              {allListings.length === 0 && <div className="no-results">{T.noResults}</div>}
+              {totalShown === 0 && <div className="no-results">{T.noResults}</div>}
 
-              {donnaconaCards.map((car, i) => (
-                <CarCard key={car.id + '-d-' + i} car={car} index={i} T={T} />
-              ))}
+              {donnaCards.map((car, i) => <CarCard key={car.id + 'd' + i} car={car} index={i} T={T} />)}
 
-              {donnaconaCards.length > 0 && otherCards.length > 0 && (
-                <div className="donnacona-divider">{T.otherDealers}</div>
+              {donnaCards.length > 0 && otherCards.length > 0 && (
+                <div className="region-divider">{T.otherDealers}</div>
               )}
 
-              {otherCards.map((car, i) => (
-                <CarCard key={car.id + '-o-' + i} car={car} index={donnaconaCards.length + i} T={T} />
-              ))}
+              {otherCards.map((car, i) => <CarCard key={car.id + 'o' + i} car={car} index={donnaCards.length + i} T={T} />)}
 
-              {allListings.length > 0 && allListings.length < (total || 0) && (
+              {totalShown > 0 && totalShown < (total || 0) && (
                 <div className="load-more-wrap">
                   <button className="load-more-btn" onClick={handleLoadMore} disabled={loadingMore}>
                     {loadingMore ? '...' : '⬇️ ' + T.loadMore}
