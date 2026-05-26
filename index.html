@@ -237,7 +237,12 @@
   }
 
   function App() {
-    const [lang, setLang] = useState("fr");
+    // Check for unsubscribe confirmation in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isUnsubscribed = urlParams.get('unsubscribed') === 'true';
+    const unsubEmail = urlParams.get('email') || '';
+
+    const [lang, setLang] = useState(urlParams.get('lang') || "fr");
     const T = copy[lang];
     const [model, setModel] = useState("");
     const [maxPrice, setMaxPrice] = useState(150000);
@@ -398,6 +403,25 @@
 
     return (
       <div>
+        {isUnsubscribed && (
+          <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'#f4f6fb',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}}>
+            <div style={{background:'#fff',borderRadius:20,padding:'48px 32px',maxWidth:480,width:'100%',boxShadow:'0 8px 40px rgba(0,31,91,0.12)',textAlign:'center'}}>
+              <div style={{fontSize:56,marginBottom:16}}>✅</div>
+              <div style={{fontFamily:'Playfair Display,serif',fontSize:24,fontWeight:700,color:'var(--navy)',marginBottom:12}}>
+                {lang === 'fr' ? 'Désabonnement confirmé' : 'Unsubscribe confirmed'}
+              </div>
+              <div style={{fontSize:15,color:'var(--muted)',lineHeight:1.6,marginBottom:28}}>
+                {lang === 'fr'
+                  ? <span>L'adresse <strong>{unsubEmail}</strong> ne recevra plus d'alertes CarGuardian.</span>
+                  : <span>The address <strong>{unsubEmail}</strong> will no longer receive CarGuardian alerts.</span>}
+              </div>
+              <a href="https://carguardian.ca" style={{display:'inline-block',background:'var(--navy)',color:'#fff',padding:'13px 28px',borderRadius:10,textDecoration:'none',fontSize:14,fontWeight:600}}>
+                {lang === 'fr' ? 'Retour au site' : 'Back to site'}
+              </a>
+              <div style={{marginTop:20,fontSize:10,color:'#ccc',letterSpacing:1}}>PROPULSÉ PAR CARGUARDIAN.AI</div>
+            </div>
+          </div>
+        )}
         <header className="header">
           <div className="top-bar">
             <span className="top-bar-text">📍 {T.address} · 418-285-3311</span>
