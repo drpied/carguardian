@@ -243,6 +243,16 @@
     const unsubEmail = urlParams.get('email') || '';
 
     const [lang, setLang] = useState(urlParams.get('lang') || "fr");
+
+    const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbxmDy6Cwq_5kpSWrX1cWvWTxVm1cAx3ALFSBUjswGStlUBylJVffsld8MwTJ37nLcHhiw/exec';
+
+    // Silently delete from sheet when unsubscribe page loads
+    React.useEffect(() => {
+      if (isUnsubscribed && unsubEmail) {
+        const params = new URLSearchParams({ type: 'unsubscribe', email: unsubEmail });
+        fetch(SIGNUP_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' }).catch(() => {});
+      }
+    }, []);
     const T = copy[lang];
     const [model, setModel] = useState("");
     const [maxPrice, setMaxPrice] = useState(150000);
