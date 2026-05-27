@@ -177,10 +177,10 @@
     }
   };
 
-  function FordLogo({ width }) {
+  function FordLogo({ width, logo }) {
     return (
       <img
-        src="/forddonnacona-logo-fr.webp"
+        src={logo || "/forddonnacona-logo-fr.webp"}
         alt="Ford Donnacona"
         style={{width: width || 130, height: 'auto', filter: 'brightness(0) invert(1)'}}
       />
@@ -243,16 +243,24 @@
     const unsubEmail = urlParams.get('email') || '';
 
     const [lang, setLang] = useState(urlParams.get('lang') || "fr");
+    const [cfg, setCfg] = useState(null);
 
-    const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbxmDy6Cwq_5kpSWrX1cWvWTxVm1cAx3ALFSBUjswGStlUBylJVffsld8MwTJ37nLcHhiw/exec';
+    // Load dealer config
+    React.useEffect(() => {
+      fetch('/config.json')
+        .then(r => r.json())
+        .then(data => setCfg(data))
+        .catch(() => setCfg({}));
+    }, []);
 
     // Silently delete from sheet when unsubscribe page loads
     React.useEffect(() => {
-      if (isUnsubscribed && unsubEmail) {
+      if (isUnsubscribed && unsubEmail && cfg) {
+        const SIGNUP_URL = cfg.signupUrl || '';
         const params = new URLSearchParams({ type: 'unsubscribe', email: unsubEmail });
         fetch(SIGNUP_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' }).catch(() => {});
       }
-    }, []);
+    }, [cfg]);
     const T = copy[lang];
     const [model, setModel] = useState("");
     const [maxPrice, setMaxPrice] = useState(150000);
@@ -279,7 +287,7 @@
 
     const handleContact = (car) => {
       if (isMobile()) {
-        window.location.href = 'tel:+14182853311';
+        window.location.href = 'tel:+1' + (cfg ? cfg.phone : '4182853311');
       } else {
         setContactCar(car);
         setContactName('');
@@ -292,7 +300,7 @@
     const handleContactSubmit = async () => {
       if (!contactName || !contactEmail) return;
       setContactSending(true);
-      const SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbxmDy6Cwq_5kpSWrX1cWvWTxVm1cAx3ALFSBUjswGStlUBylJVffsld8MwTJ37nLcHhiw/exec';
+      const SIGNUP_URL = cfg ? cfg.signupUrl : '';
       const params = new URLSearchParams({
         type: 'contact',
         name: contactName,
@@ -325,12 +333,20 @@
     };
 
     const buildMainUrl = (pageNum) => {
-      let url = `/api/search-vehicles?latitude=46.6565&longitude=-71.9228&radius=100&make=Ford&rows=50&start=${pageNum * 50}&${getSortParams()}`;
+      const rLat2 = cfg ? cfg.regionLat : '46.6565';
+      const rLng2 = cfg ? cfg.regionLng : '-71.9228';
+      const rRadius2 = cfg ? cfg.regionRadius : '100';
+      const make2 = cfg ? cfg.make : 'Ford';
+      let url = `/api/search-vehicles?latitude=${rLat2}&longitude=${rLng2}&radius=${rRadius2}&make=${make2}&rows=50&start=${pageNum * 50}&${getSortParams()}`;
       return addFilters(url);
     };
 
     const buildDonnaconaUrl = () => {
-      let url = `/api/search-vehicles?latitude=${DONNA_LAT}&longitude=${DONNA_LNG}&radius=${DONNA_RADIUS}&make=Ford&rows=50&start=0&${getSortParams()}`;
+      const dLat = cfg ? cfg.dealerLat : DONNA_LAT;
+      const dLng = cfg ? cfg.dealerLng : DONNA_LNG;
+      const dRadius = cfg ? cfg.dealerRadius : DONNA_RADIUS;
+      const dMake = cfg ? cfg.make : 'Ford';
+      let url = `/api/search-vehicles?latitude=${dLat}&longitude=${dLng}&radius=${dRadius}&make=${dMake}&rows=50&start=0&${getSortParams()}`;
       return addFilters(url);
     };
 
@@ -413,6 +429,7 @@
 
     return (
       <div>
+        {!cfg && <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'#001f5b',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{color:'#FFB800',fontFamily:'Georgia,serif',fontSize:24}}>CarGuardian</div></div>}
         {isUnsubscribed && (
           <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'#f4f6fb',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}}>
             <div style={{background:'#fff',borderRadius:20,padding:'48px 32px',maxWidth:480,width:'100%',boxShadow:'0 8px 40px rgba(0,31,91,0.12)',textAlign:'center'}}>
@@ -434,11 +451,11 @@
         )}
         <header className="header">
           <div className="top-bar">
-            <span className="top-bar-text">📍 {T.address} · 418-285-3311</span>
+            <span className="top-bar-text">📍 {cfg ? cfg.address : T.address} · {cfg ? cfg.phoneDisplay : "418-285-3311"}</span>
             <button className="lang-btn" onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}>{T.lang}</button>
           </div>
           <div className="header-main" style={{justifyContent:'center'}}>
-            <FordLogo width={220} />
+            <FordLogo width={220} logo={cfg ? cfg.logo : "/forddonnacona-logo-fr.webp"} />
           </div>
         </header>
 
@@ -579,9 +596,9 @@
         </section>
 
         <footer className="footer">
-          <div style={{marginBottom:8}}><img src="/forddonnacona-logo-fr.webp" alt="Ford Donnacona" style={{width:160, height:'auto', filter:'brightness(0) invert(1)', opacity:0.8}} /></div>
-          <div>128 Boulevard Les Écureuils, Donnacona, QC G3M 0J2</div>
-          <div>418-285-3311 · forddonnacona.com</div>
+          <div style={{marginBottom:8}}><img src={cfg ? cfg.logo : "/forddonnacona-logo-fr.webp"} alt={cfg ? cfg.dealerName : "Ford Donnacona"} style={{width:160, height:'auto', filter:'brightness(0) invert(1)', opacity:0.8}} /></div>
+          <div>{cfg ? cfg.addressFull : "128 Boulevard Les Écureuils, Donnacona, QC G3M 0J2"}</div>
+          <div>{cfg ? cfg.phoneDisplay : "418-285-3311"} · {cfg ? cfg.website : "forddonnacona.com"}</div>
           <div className="footer-powered">PROPULSÉ PAR CARGUARDIAN.AI</div>
         </footer>
       </div>
