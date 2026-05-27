@@ -1,0 +1,22 @@
+{
+  "dealerName": "Ford Donnacona",
+  "taglineFr": "ON DÉPASSE VOS ATTENTES",
+  "taglineEn": "WE EXCEED YOUR EXPECTATIONS",
+  "phone": "4182853311",
+  "phoneDisplay": "418-285-3311",
+  "address": "128 Boul. Les Écureuils, Donnacona QC",
+  "addressFull": "128 Boulevard Les Écureuils, Donnacona, QC G3M 0J2",
+  "website": "forddonnacona.com",
+  "logo": "/forddonnacona-logo-fr.webp",
+  "make": "Ford",
+  "source": "forddonnacona.com",
+  "regionLat": "46.6565",
+  "regionLng": "-71.9228",
+  "dealerLat": "46.683713",
+  "dealerLng": "-71.734071",
+  "regionRadius": "100",
+  "dealerRadius": "8",
+  "navyColor": "#001f5b",
+  "goldColor": "#FFB800",
+  "signupUrl": "https://script.google.com/macros/s/AKfycbxmDy6Cwq_5kpSWrX1cWvWTxVm1cAx3ALFSBUjswGStlUBylJVffsld8MwTJ37nLcHhiw/exec"
+}
