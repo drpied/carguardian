@@ -253,14 +253,23 @@
         .catch(() => setCfg({}));
     }, []);
 
-    // Silently delete from sheet when unsubscribe page loads
-    React.useEffect(() => {
-      if (isUnsubscribed && unsubEmail && cfg) {
-        const SIGNUP_URL = cfg.signupUrl || '';
-        const params = new URLSearchParams({ type: 'unsubscribe', email: unsubEmail });
-        fetch(SIGNUP_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' }).catch(() => {});
-      }
-    }, [cfg]);
+    // NOTE: unsubscribe is NEVER triggered automatically on page load.
+    // Email clients (Gmail, Outlook, Apple Mail) pre-fetch every link in emails,
+    // which would silently delete the subscriber. The user must click a button.
+    const [unsubDone, setUnsubDone] = useState(false);
+    const [unsubSending, setUnsubSending] = useState(false);
+
+    const confirmUnsub = async () => {
+      if (!cfg) return;
+      setUnsubSending(true);
+      const params = new URLSearchParams({ type: 'unsubscribe', email: unsubEmail });
+      try {
+        await fetch((cfg.signupUrl || '') + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+      } catch(e) {}
+      setUnsubDone(true);
+      setUnsubSending(false);
+    };
+
     const T = copy[lang];
     const [model, setModel] = useState("");
     const [maxPrice, setMaxPrice] = useState(150000);
@@ -433,19 +442,47 @@
         {isUnsubscribed && (
           <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'#f4f6fb',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}}>
             <div style={{background:'#fff',borderRadius:20,padding:'48px 32px',maxWidth:480,width:'100%',boxShadow:'0 8px 40px rgba(0,31,91,0.12)',textAlign:'center'}}>
-              <div style={{fontSize:56,marginBottom:16}}>✅</div>
-              <div style={{fontFamily:'Playfair Display,serif',fontSize:24,fontWeight:700,color:'var(--navy)',marginBottom:12}}>
-                {lang === 'fr' ? 'Désabonnement confirmé' : 'Unsubscribe confirmed'}
-              </div>
-              <div style={{fontSize:15,color:'var(--muted)',lineHeight:1.6,marginBottom:28}}>
-                {lang === 'fr'
-                  ? <span>L'adresse <strong>{unsubEmail}</strong> ne recevra plus d'alertes CarGuardian.</span>
-                  : <span>The address <strong>{unsubEmail}</strong> will no longer receive CarGuardian alerts.</span>}
-              </div>
-              <a href="https://carguardian.ca" style={{display:'inline-block',background:'var(--navy)',color:'#fff',padding:'13px 28px',borderRadius:10,textDecoration:'none',fontSize:14,fontWeight:600}}>
-                {lang === 'fr' ? 'Retour au site' : 'Back to site'}
-              </a>
-              <div style={{marginTop:20,fontSize:10,color:'#ccc',letterSpacing:1}}>PROPULSÉ PAR CARGUARDIAN.AI</div>
+              {unsubDone ? (
+                <>
+                  <div style={{fontSize:56,marginBottom:16}}>✅</div>
+                  <div style={{fontFamily:'Playfair Display,serif',fontSize:24,fontWeight:700,color:'var(--navy)',marginBottom:12}}>
+                    {lang === 'fr' ? 'Désabonnement confirmé' : 'Unsubscribe confirmed'}
+                  </div>
+                  <div style={{fontSize:15,color:'var(--muted)',lineHeight:1.6,marginBottom:28}}>
+                    {lang === 'fr'
+                      ? <span>L'adresse <strong>{unsubEmail}</strong> ne recevra plus d'alertes CarGuardian.</span>
+                      : <span>The address <strong>{unsubEmail}</strong> will no longer receive CarGuardian alerts.</span>}
+                  </div>
+                  <a href="https://carguardian.ca" style={{display:'inline-block',background:'var(--navy)',color:'#fff',padding:'13px 28px',borderRadius:10,textDecoration:'none',fontSize:14,fontWeight:600}}>
+                    {lang === 'fr' ? 'Retour au site' : 'Back to site'}
+                  </a>
+                </>
+              ) : (
+                <>
+                  <div style={{fontSize:56,marginBottom:16}}>📧</div>
+                  <div style={{fontFamily:'Playfair Display,serif',fontSize:22,fontWeight:700,color:'var(--navy)',marginBottom:12}}>
+                    {lang === 'fr' ? 'Se désabonner?' : 'Unsubscribe?'}
+                  </div>
+                  <div style={{fontSize:15,color:'var(--muted)',lineHeight:1.6,marginBottom:28}}>
+                    {lang === 'fr'
+                      ? <span>Voulez-vous vraiment retirer <strong>{unsubEmail}</strong> des alertes CarGuardian?</span>
+                      : <span>Do you really want to remove <strong>{unsubEmail}</strong> from CarGuardian alerts?</span>}
+                  </div>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:20}}>
+                    <a href="https://carguardian.ca" style={{display:'block',background:'#fff',color:'var(--navy)',border:'1.5px solid var(--navy)',padding:'13px 20px',borderRadius:10,textDecoration:'none',fontSize:14,fontWeight:600}}>
+                      {lang === 'fr' ? 'Annuler' : 'Cancel'}
+                    </a>
+                    <button
+                      onClick={confirmUnsub}
+                      disabled={unsubSending || !cfg}
+                      style={{background:'#c0392b',color:'#fff',border:'none',padding:'13px 20px',borderRadius:10,fontSize:14,fontWeight:600,cursor:'pointer',opacity:(unsubSending||!cfg)?0.6:1}}
+                    >
+                      {unsubSending ? '...' : (lang === 'fr' ? 'Confirmer' : 'Confirm')}
+                    </button>
+                  </div>
+                </>
+              )}
+              <div style={{marginTop:12,fontSize:10,color:'#ccc',letterSpacing:1}}>PROPULSÉ PAR CARGUARDIAN.AI</div>
             </div>
           </div>
         )}
